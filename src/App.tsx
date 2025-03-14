@@ -1,11 +1,8 @@
 
-function App() {
+import AppRoutes from "./routes/AppRoutes";
 
-  return (
-    <div className="p-4 font-display">
-      Hi a 123456789
-    </div>
-  )
+function App() {
+  return <AppRoutes />
 }
 
 export default App
