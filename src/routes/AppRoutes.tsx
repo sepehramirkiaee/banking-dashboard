@@ -1,20 +1,28 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 import AuthRoutes from "./AuthRoutes";
 import DashboardRoutes from "./DashboardRoutes";
-import { isAuthenticated } from "../utils/auth";
+import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        {/* Handle authentication at the root */}
-        <Route path="/" element={<Navigate to={isAuthenticated() ? "/app" : "/auth/login"} replace />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Public Routes (Accessible without authentication) */}
-        <Route path="auth/*" element={<AuthRoutes />} />
+        {/* Public Routes (For Unauthenticated Users) */}
+        <Route path="auth/*" element={<PublicRoute />}>
+          <Route path="*" element={<AuthRoutes />} />
+        </Route>
 
-        {/* Protected Routes (Accessible only after authentication) */}
-        <Route path="app/*" element={<DashboardRoutes />} />
+        {/* Protected Routes (Requires Authentication) */}
+        <Route path="dashboard/*" element={<ProtectedRoute />}>
+          <Route path="*" element={<DashboardRoutes />} />
+        </Route>
+
+        {/* Not Found Route (For Everything Else) */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

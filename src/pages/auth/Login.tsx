@@ -5,7 +5,7 @@ const Login = () => {
 
   const handleLogin = () => {
     localStorage.setItem("authToken", "dummy-token");
-    navigate("/app", { replace: true });
+    navigate("/dashboard", { replace: true });
   };
 
   return (
