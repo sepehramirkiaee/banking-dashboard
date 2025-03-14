@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 
 const TransactionForm = () => {
-  const { addTransaction,duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+  const { addTransaction, duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
 
-   // Pre-fill form when duplicating a transaction
-   useEffect(() => {
+  // Pre-fill form when duplicating a transaction
+  useEffect(() => {
     if (duplicatingTransaction) {
       setAmount(duplicatingTransaction.amount.toString());
       setDescription(duplicatingTransaction.description);
@@ -106,80 +106,81 @@ const TransactionForm = () => {
 
   return (
     <>
-    <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg">
-      <h3 className="text-lg font-semibold mb-3">➕ Add Transaction</h3>
+      <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg">
+        <h3 className="text-lg font-semibold mb-3">➕ Add Transaction</h3>
 
-      <div className="mb-2">
-        <label className="block text-gray-700">Amount:</label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => {
-            // Prevent negative input from being typed
-            const value = e.target.value;
-            if (value === "" || Number(value) > 0) setAmount(value);
-          }}
-          className="w-full p-2 border rounded"
-          placeholder="Enter amount"
-        />
-      </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">Amount:</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => {
+              // Prevent negative input from being typed
+              const value = e.target.value;
+              if (value === "" || Number(value) > 0) setAmount(value);
+            }}
+            className="w-full p-2 border rounded"
+            placeholder="Enter amount"
+          />
+        </div>
 
-      <div className="mb-2">
-        <label className="block text-gray-700">Description:</label>
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 border rounded"
-          placeholder="Enter description"
-        />
-      </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">Description:</label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-2 border rounded"
+            placeholder="Enter description"
+          />
+        </div>
 
-      <div className="mb-2">
-        <label className="block text-gray-700">Transaction Date:</label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full p-2 border rounded"
-        />
-      </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">Transaction Date:</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
-      <div className="mb-2">
-        <label className="block text-gray-700">Type:</label>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
-          className="w-full p-2 border rounded"
-        >
-          <option value="deposit">Deposit</option>
-          <option value="withdrawal">Withdrawal</option>
-        </select>
-      </div>
+        <div className="mb-2">
+          <label className="block text-gray-700">Type:</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
+            className="w-full p-2 border rounded"
+          >
+            <option value="deposit">Deposit</option>
+            <option value="withdrawal">Withdrawal</option>
+          </select>
+        </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-      >
-        {editingTransactionId ? "Update Transaction" : "Add Transaction"}
-      </button>
-
-      <button
-        type="button"
-        onClick={handleResetForm}
-        className="w-full bg-gray-500 text-white p-2 rounded mt-2 hover:bg-gray-600">
-        Cancel
-      </button>
-    </form>
-    {lastAddedTransaction && (
-      <div className="flex items-center justify-between bg-indigo-50 p-4 mt-4 rounded-lg">
-        <p>You can undo the last transaction</p>
         <button
-          onClick={undoLastTransaction}
-          className="text-blue-500 hover:underline">
-          Undo Last Transaction
+          type="submit"
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
+          {editingTransactionId ? "Update Transaction" : "Add Transaction"}
         </button>
-      </div>
+        {editingTransactionId && (
+          <button
+            type="button"
+            onClick={handleResetForm}
+            className="w-full bg-gray-500 text-white p-2 rounded mt-2 hover:bg-gray-600">
+            Cancel
+          </button>
+        )}
+      </form>
+      {lastAddedTransaction && (
+        <div className="flex items-center justify-between bg-indigo-50 p-4 mt-4 rounded-lg">
+          <p>You can undo the last transaction</p>
+          <button
+            onClick={undoLastTransaction}
+            className="text-blue-500 hover:underline">
+            Undo Last Transaction
+          </button>
+        </div>
       )}
     </>
   );

@@ -14,6 +14,11 @@ export interface TransactionStore {
   lastAddedTransaction: Transaction | null;
   editingTransactionId: string | null;
   duplicatingTransaction: Transaction | null;
+  currentPage: number;
+  transactionsPerPage: number;
+  setTransactionPerPage: (perPage: number) => void;
+  setCurrentPage: (page: number) => void;
+  getTotalFilteredTransactions: () => number;
   setEditingTransactionId: (id: string | null) => void;
   addTransaction: (transaction: Transaction) => void;
   removeTransaction: (id: string) => void;
@@ -21,4 +26,12 @@ export interface TransactionStore {
   getTotalBalance: () => number;
   undoLastTransaction: () => void;
   setDuplicatingTransaction: (transaction: Transaction | null) => void;
+  filters: {
+    type: "all" | TransactionType;
+    startDate: string;
+    endDate: string;
+    description: string;
+  };
+  setFilters: (filters: Partial<TransactionStore["filters"]>) => void;
+  getFilteredTransactions: () => Transaction[];
 }
