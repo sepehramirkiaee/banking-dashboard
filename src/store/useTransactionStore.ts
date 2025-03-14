@@ -20,7 +20,7 @@ export const useTransactionStore = create<TransactionStore>()(
           transactions: state.transactions.filter((t) => t.id !== id),
         })),
 
-      resetTransactions: () => 
+      resetTransactions: () =>
         set(() => {
           localStorage.removeItem("transactions");
           return { transactions: [], lastAddedTransaction: null };
@@ -31,7 +31,9 @@ export const useTransactionStore = create<TransactionStore>()(
           if (!state.lastAddedTransaction) return state;
 
           return {
-            transactions: state.transactions.filter((t) => t.id !== state.lastAddedTransaction!.id),
+            transactions: state.transactions.filter(
+              (t) => t.id !== state.lastAddedTransaction!.id
+            ),
             lastAddedTransaction: null,
           };
         }),
@@ -51,8 +53,12 @@ export const useTransactionStore = create<TransactionStore>()(
       },
 
       editingTransactionId: null,
-      setEditingTransactionId: (id: string | null) => set(() => ({ editingTransactionId: id })),
+      setEditingTransactionId: (id: string | null) =>
+        set(() => ({ editingTransactionId: id })),
 
+      duplicatingTransaction: null,
+      setDuplicatingTransaction: (transaction) =>
+        set(() => ({ duplicatingTransaction: transaction })),
     }),
     {
       name: "transactions",

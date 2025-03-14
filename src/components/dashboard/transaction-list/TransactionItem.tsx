@@ -2,7 +2,7 @@ import { useTransactionStore } from "@/store/useTransactionStore";
 import { Transaction } from "@/types";
 
 export default function TransactionItem({ transaction }: { transaction: Transaction }) {
-  const { removeTransaction, setEditingTransactionId, editingTransactionId } = useTransactionStore();
+  const { removeTransaction, setEditingTransactionId, editingTransactionId, setDuplicatingTransaction } = useTransactionStore();
 
   const handleRemove = (id: string) => {
     const confirmed = window.confirm("Are you sure you want to remove this transaction?");
@@ -35,6 +35,12 @@ export default function TransactionItem({ transaction }: { transaction: Transact
           className="text-blue-500 hover:text-blue-700"
         >
           ✏
+        </button>
+        <button
+          onClick={() => setDuplicatingTransaction(transaction)}
+          className="text-green-500 hover:text-green-700"
+        >
+          📋
         </button>
       </div>
     </li>

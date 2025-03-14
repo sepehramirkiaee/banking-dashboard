@@ -2,11 +2,22 @@ import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 
 const TransactionForm = () => {
-  const { addTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+  const { addTransaction,duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
+
+   // Pre-fill form when duplicating a transaction
+   useEffect(() => {
+    if (duplicatingTransaction) {
+      setAmount(duplicatingTransaction.amount.toString());
+      setDescription(duplicatingTransaction.description);
+      setDate(duplicatingTransaction.date.split("T")[0]);
+      setType(duplicatingTransaction.type);
+      setDuplicatingTransaction(null); // Reset after filling
+    }
+  }, [duplicatingTransaction, setDuplicatingTransaction]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
