@@ -12,4 +12,6 @@ export interface TransactionStore {
   transactions: Transaction[];
   addTransaction: (transaction: Transaction) => void;
   removeTransaction: (id: string) => void;
+  resetTransactions: () => void;
+  getTotalBalance: () => number;
 }
