@@ -1,4 +1,4 @@
-import { AccountOverview, TransactionForm} from "@/components/dashboard";
+import { AccountOverview, TransactionForm, TransactionList} from "@/components/dashboard";
 
 const Dashboard = () => {
   return (
@@ -7,6 +7,7 @@ const Dashboard = () => {
       <p>Welcome to the Banking Dashboard</p>
       <AccountOverview />
       <TransactionForm />
+      <TransactionList />
     </div>
   );
 };

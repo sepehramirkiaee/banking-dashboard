@@ -6,6 +6,7 @@ const TransactionForm = () => {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // ✅ Default to today
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +41,12 @@ const TransactionForm = () => {
       }
     }
 
-    // Create Transaction (Amount is always positive, system decides deposit/withdrawal)
+    // Create Transaction with the selected date
     const newTransaction = {
       id: crypto.randomUUID(),
       amount: numericAmount,
       description: trimmedDescription,
-      date: new Date().toISOString(),
+      date: new Date(date).toISOString(),
       type,
     };
 
@@ -55,6 +56,7 @@ const TransactionForm = () => {
     setAmount("");
     setDescription("");
     setType("deposit");
+    setDate(new Date().toISOString().split("T")[0]); // ✅ Reset to today
   };
 
   return (
@@ -84,6 +86,16 @@ const TransactionForm = () => {
           onChange={(e) => setDescription(e.target.value)}
           className="w-full p-2 border rounded"
           placeholder="Enter description"
+        />
+      </div>
+
+      <div className="mb-2">
+        <label className="block text-gray-700">Transaction Date:</label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="w-full p-2 border rounded"
         />
       </div>
 
