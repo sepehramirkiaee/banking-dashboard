@@ -10,6 +10,8 @@ export interface Transaction {
 
 export interface TransactionStore {
   transactions: Transaction[];
+  editingTransactionId: string | null;
+  setEditingTransactionId: (id: string | null) => void;
   addTransaction: (transaction: Transaction) => void;
   removeTransaction: (id: string) => void;
   resetTransactions: () => void;

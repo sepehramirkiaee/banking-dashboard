@@ -7,7 +7,7 @@ export const useTransactionStore = create<TransactionStore>()(
   persist(
     (set, get) => ({
       transactions: [],
-
+      
       addTransaction: (transaction) =>
         set((state) => ({
           transactions: [...state.transactions, transaction],
@@ -37,6 +37,10 @@ export const useTransactionStore = create<TransactionStore>()(
 
         return totalIncome - totalExpenses;
       },
+
+      editingTransactionId: null,
+      setEditingTransactionId: (id: string | null) => set(() => ({ editingTransactionId: id })),
+
     }),
     {
       name: "transactions",

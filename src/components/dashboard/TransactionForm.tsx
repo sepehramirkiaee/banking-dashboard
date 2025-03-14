@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 
 const TransactionForm = () => {
-  const { addTransaction, getTotalBalance } = useTransactionStore();
+  const { addTransaction, removeTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // ✅ Default to today
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,23 +41,55 @@ const TransactionForm = () => {
       }
     }
 
-    // Create Transaction with the selected date
-    const newTransaction = {
-      id: crypto.randomUUID(),
-      amount: numericAmount,
-      description: trimmedDescription,
-      date: new Date(date).toISOString(),
-      type,
-    };
+    if (editingTransactionId) {
+      removeTransaction(editingTransactionId);
+      addTransaction({
+        id: editingTransactionId,
+        amount: numericAmount,
+        description: trimmedDescription,
+        date: new Date(date).toISOString(),
+        type,
+      });
 
-    addTransaction(newTransaction);
+      setEditingTransactionId(null);
+    } else {
+      addTransaction({
+        id: crypto.randomUUID(),
+        amount: numericAmount,
+        description: trimmedDescription,
+        date: new Date(date).toISOString(),
+        type,
+      });
+    }
 
     // Reset Form Inputs After Submission
+    handleResetForm();
+  };
+
+  const handleResetForm = () => {
     setAmount("");
     setDescription("");
     setType("deposit");
-    setDate(new Date().toISOString().split("T")[0]); // ✅ Reset to today
-  };
+    setDate(new Date().toISOString().split("T")[0]);
+    setEditingTransactionId(null);
+  }
+
+  useEffect(() => {
+    if (editingTransactionId) {
+      const transaction = transactions.find(
+        (t) => t.id === editingTransactionId
+      );
+
+      if (transaction) {
+        setAmount(transaction.amount.toString());
+        setDescription(transaction.description);
+        setType(transaction.type);
+        setDate(transaction.date.split("T")[0]);
+      }
+    } else {
+      handleResetForm();
+    }
+  }, [editingTransactionId]);
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg">
@@ -115,7 +147,14 @@ const TransactionForm = () => {
         type="submit"
         className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
       >
-        Add Transaction
+        {editingTransactionId ? "Update Transaction" : "Add Transaction"}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleResetForm}
+        className="w-full bg-gray-500 text-white p-2 rounded mt-2 hover:bg-gray-600">
+        Cancel
       </button>
     </form>
   );

@@ -18,7 +18,7 @@ const TransactionList = () => {
       <h3 className="text-lg font-semibold text-gray-700 mb-3">📜 Transaction History</h3>
       <ul className="divide-y divide-gray-200">
         {sortedTransactions.map((transaction) => (
-          <TransactionItem key={transaction.id} transaction={transaction}/>
+          <TransactionItem key={transaction.id} transaction={transaction} />
         ))}
       </ul>
     </div>
