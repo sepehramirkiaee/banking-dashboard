@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 
 const TransactionForm = () => {
-  const { addTransaction, removeTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+  const { addTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
@@ -49,6 +49,7 @@ const TransactionForm = () => {
         description: trimmedDescription,
         date: new Date(date).toISOString(),
         type,
+        createdAt: new Date().getTime(),
       });
 
       setEditingTransactionId(null);
@@ -59,6 +60,7 @@ const TransactionForm = () => {
         description: trimmedDescription,
         date: new Date(date).toISOString(),
         type,
+        createdAt: new Date().getTime(),
       });
     }
 
@@ -92,6 +94,7 @@ const TransactionForm = () => {
   }, [editingTransactionId]);
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg">
       <h3 className="text-lg font-semibold mb-3">➕ Add Transaction</h3>
 
@@ -157,6 +160,17 @@ const TransactionForm = () => {
         Cancel
       </button>
     </form>
+    {lastAddedTransaction && (
+      <div className="flex items-center justify-between bg-indigo-50 p-4 mt-4 rounded-lg">
+        <p>You can undo the last transaction</p>
+        <button
+          onClick={undoLastTransaction}
+          className="text-blue-500 hover:underline">
+          Undo Last Transaction
+        </button>
+      </div>
+      )}
+    </>
   );
 };
 

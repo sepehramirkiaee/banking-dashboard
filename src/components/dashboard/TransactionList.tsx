@@ -8,10 +8,17 @@ const TransactionList = () => {
     return <p className="text-gray-500 text-center mt-4">No transactions recorded yet.</p>;
   }
 
-  // Sort transactions by date (newest first)
-  const sortedTransactions = [...transactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+  
+    // If dates are the same, compare by `createdAt` timestamp
+    if (dateA === dateB) {
+      return b.createdAt - a.createdAt; // Ensures newer transactions appear first
+    }
+  
+    return dateB - dateA;
+  });
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mt-4">

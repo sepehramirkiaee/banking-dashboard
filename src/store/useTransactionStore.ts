@@ -7,10 +7,12 @@ export const useTransactionStore = create<TransactionStore>()(
   persist(
     (set, get) => ({
       transactions: [],
-      
+      lastAddedTransaction: null, // Track last added transaction
+
       addTransaction: (transaction) =>
         set((state) => ({
           transactions: [...state.transactions, transaction],
+          lastAddedTransaction: transaction, // Store the last added transaction
         })),
 
       removeTransaction: (id) =>
@@ -21,8 +23,18 @@ export const useTransactionStore = create<TransactionStore>()(
       resetTransactions: () => 
         set(() => {
           localStorage.removeItem("transactions");
-          return { transactions: [] };
-        }), 
+          return { transactions: [], lastAddedTransaction: null };
+        }),
+
+      undoLastTransaction: () =>
+        set((state) => {
+          if (!state.lastAddedTransaction) return state;
+
+          return {
+            transactions: state.transactions.filter((t) => t.id !== state.lastAddedTransaction!.id),
+            lastAddedTransaction: null,
+          };
+        }),
 
       // Computed Value
       getTotalBalance: () => {
@@ -44,7 +56,6 @@ export const useTransactionStore = create<TransactionStore>()(
     }),
     {
       name: "transactions",
-      // storage: createJSONStorage(() => localforage),
     }
   )
 );
