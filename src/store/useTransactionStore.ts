@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 // import localforage from "localforage";
 import { TransactionStore } from "../types";
+import Papa from "papaparse";
 
 export const useTransactionStore = create<TransactionStore>()(
   persist(
@@ -43,10 +44,23 @@ export const useTransactionStore = create<TransactionStore>()(
           return true;
         });
 
+        // ✅ Sort transactions before pagination
+        const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+          const dateA = new Date(a.date).getTime();
+          const dateB = new Date(b.date).getTime();
+
+          // If dates are the same, compare by `createdAt` timestamp
+          if (dateA === dateB) {
+            return b.createdAt - a.createdAt; // Ensures newer transactions appear first
+          }
+
+          return dateB - dateA;
+        });
+
         // ✅ Apply pagination: slice transactions based on current page
         const startIndex = (currentPage - 1) * transactionsPerPage;
         const endIndex = startIndex + transactionsPerPage;
-        return filteredTransactions.slice(startIndex, endIndex);
+        return sortedTransactions.slice(startIndex, endIndex);
       },
 
       getTotalFilteredTransactions: () => {
@@ -115,6 +129,54 @@ export const useTransactionStore = create<TransactionStore>()(
       duplicatingTransaction: null,
       setDuplicatingTransaction: (transaction) =>
         set(() => ({ duplicatingTransaction: transaction })),
+
+      exportTransactionsAsCSV: () => {
+        const { getFilteredTransactions } = get();
+        const filteredTransactions = getFilteredTransactions();
+      
+        if (filteredTransactions.length === 0) {
+          alert("No transactions to export based on current filters.");
+          return;
+        }
+      
+        // ✅ Convert transactions to CSV format
+        const csvData = filteredTransactions.map(({ date, amount, description, type }) => ({
+          Date: new Date(date).toISOString().split("T")[0], // Format date as YYYY-MM-DD
+          Amount: type === "withdrawal" ? `-${Math.abs(amount).toFixed(2)}` : amount.toFixed(2), // ✅ Ensure Withdrawals have "-"
+          Description: description,
+          Type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter (Deposit, Withdrawal)
+        }));
+      
+        // ✅ Convert JSON to CSV format
+        const csvString = Papa.unparse(csvData);
+      
+        // ✅ Generate filename with correct local time
+        const now = new Date();
+        const localDateTime = now.toLocaleString("en-GB", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // ✅ Use user's local timezone
+        });
+      
+        // ✅ Format the filename correctly
+        const formattedDateTime = localDateTime.replace(/[/,:\s]/g, "-"); // Replace problematic characters
+        const filename = `transactions_${formattedDateTime}.csv`;
+      
+        // ✅ Trigger CSV file download
+        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     }),
     {
       name: "transactions",

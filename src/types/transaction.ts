@@ -34,4 +34,5 @@ export interface TransactionStore {
   };
   setFilters: (filters: Partial<TransactionStore["filters"]>) => void;
   getFilteredTransactions: () => Transaction[];
+  exportTransactionsAsCSV: () => void;
 }
