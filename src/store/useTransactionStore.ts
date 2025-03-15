@@ -17,9 +17,22 @@ export const useTransactionStore = create<TransactionStore>()(
         description: "",
       },
 
+      isFilterActive: () => {
+        const { filters } = get();
+        const initialFilters = {
+          type: "all",
+          startDate: "",
+          endDate: "",
+          description: "",
+        };
+
+        return JSON.stringify(filters) !== JSON.stringify(initialFilters);
+      },
+
       currentPage: 1, // Track current page
-      transactionsPerPage: 1, // Set default items per page
-      setTransactionPerPage: (perPage: number) => set(() => ({ transactionsPerPage: perPage })),
+      transactionsPerPage: 20, // Set default items per page
+      setTransactionPerPage: (perPage: number) =>
+        set(() => ({ transactionsPerPage: perPage })),
 
       setFilters: (filters) =>
         set((state) => ({
@@ -30,14 +43,26 @@ export const useTransactionStore = create<TransactionStore>()(
       setCurrentPage: (page: number) => set(() => ({ currentPage: page })),
 
       getFilteredTransactions: () => {
-        const { transactions, filters, currentPage, transactionsPerPage } = get();
+        const { transactions, filters, currentPage, transactionsPerPage } =
+          get();
         const filteredTransactions = transactions.filter((transaction) => {
-          if (filters.type !== "all" && transaction.type !== filters.type) return false;
-          if (filters.startDate && new Date(transaction.date) < new Date(filters.startDate)) return false;
-          if (filters.endDate && new Date(transaction.date) > new Date(filters.endDate)) return false;
+          if (filters.type !== "all" && transaction.type !== filters.type)
+            return false;
+          if (
+            filters.startDate &&
+            new Date(transaction.date) < new Date(filters.startDate)
+          )
+            return false;
+          if (
+            filters.endDate &&
+            new Date(transaction.date) > new Date(filters.endDate)
+          )
+            return false;
           if (
             filters.description &&
-            !transaction.description.toLowerCase().includes(filters.description.toLowerCase())
+            !transaction.description
+              .toLowerCase()
+              .includes(filters.description.toLowerCase())
           ) {
             return false;
           }
@@ -66,12 +91,23 @@ export const useTransactionStore = create<TransactionStore>()(
       getTotalFilteredTransactions: () => {
         const { transactions, filters } = get();
         return transactions.filter((transaction) => {
-          if (filters.type !== "all" && transaction.type !== filters.type) return false;
-          if (filters.startDate && new Date(transaction.date) < new Date(filters.startDate)) return false;
-          if (filters.endDate && new Date(transaction.date) > new Date(filters.endDate)) return false;
+          if (filters.type !== "all" && transaction.type !== filters.type)
+            return false;
+          if (
+            filters.startDate &&
+            new Date(transaction.date) < new Date(filters.startDate)
+          )
+            return false;
+          if (
+            filters.endDate &&
+            new Date(transaction.date) > new Date(filters.endDate)
+          )
+            return false;
           if (
             filters.description &&
-            !transaction.description.toLowerCase().includes(filters.description.toLowerCase())
+            !transaction.description
+              .toLowerCase()
+              .includes(filters.description.toLowerCase())
           ) {
             return false;
           }
@@ -95,6 +131,9 @@ export const useTransactionStore = create<TransactionStore>()(
           localStorage.removeItem("transactions");
           return { transactions: [], lastAddedTransaction: null };
         }),
+
+      clearLastAddedTransaction: () =>
+        set(() => ({ lastAddedTransaction: null })),
 
       undoLastTransaction: () =>
         set((state) => {
@@ -123,8 +162,9 @@ export const useTransactionStore = create<TransactionStore>()(
       },
 
       editingTransactionId: null,
-      setEditingTransactionId: (id: `${string}-${string}-${string}-${string}-${string}` | null) =>
-        set(() => ({ editingTransactionId: id })),
+      setEditingTransactionId: (
+        id: `${string}-${string}-${string}-${string}-${string}` | null
+      ) => set(() => ({ editingTransactionId: id })),
 
       duplicatingTransaction: null,
       setDuplicatingTransaction: (transaction) =>
@@ -133,23 +173,28 @@ export const useTransactionStore = create<TransactionStore>()(
       exportTransactionsAsCSV: () => {
         const { getFilteredTransactions } = get();
         const filteredTransactions = getFilteredTransactions();
-      
+
         if (filteredTransactions.length === 0) {
           alert("No transactions to export based on current filters.");
           return;
         }
-      
+
         // Convert transactions to CSV format
-        const csvData = filteredTransactions.map(({ date, amount, description, type }) => ({
-          Date: new Date(date).toISOString().split("T")[0], // Format date as YYYY-MM-DD
-          Amount: type === "withdrawal" ? `-${Math.abs(amount).toFixed(2)}` : amount.toFixed(2), // Ensure Withdrawals have "-"
-          Description: description,
-          Type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter (Deposit, Withdrawal)
-        }));
-      
+        const csvData = filteredTransactions.map(
+          ({ date, amount, description, type }) => ({
+            Date: new Date(date).toISOString().split("T")[0], // Format date as YYYY-MM-DD
+            Amount:
+              type === "withdrawal"
+                ? `-${Math.abs(amount).toFixed(2)}`
+                : amount.toFixed(2), // Ensure Withdrawals have "-"
+            Description: description,
+            Type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter (Deposit, Withdrawal)
+          })
+        );
+
         // Convert JSON to CSV format
         const csvString = Papa.unparse(csvData);
-      
+
         // Generate filename with correct local time
         const now = new Date();
         const localDateTime = now.toLocaleString("en-GB", {
@@ -162,11 +207,11 @@ export const useTransactionStore = create<TransactionStore>()(
           hour12: false,
           timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use user's local timezone
         });
-      
+
         // Format the filename correctly
         const formattedDateTime = localDateTime.replace(/[/,:\s]/g, "-"); // Replace problematic characters
         const filename = `transactions_${formattedDateTime}.csv`;
-      
+
         // Trigger CSV file download
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
@@ -190,31 +235,57 @@ export const useTransactionStore = create<TransactionStore>()(
             skipEmptyLines: true,
             complete: (result) => {
               const invalidRows: string[] = [];
-              const parsedTransactions = result.data.map((row: CSVTransactionRow, index) => {                // Validate required fields
-                if (!row.Date || !row.Amount || !row.Description || !row.Type) {
-                  invalidRows.push(`Row ${index + 1}: Missing required fields.`);
-                  return null;
-                }
+              const parsedTransactions = result.data
+                .map((row: CSVTransactionRow, index) => {
+                  // Validate required fields
+                  if (
+                    !row.Date ||
+                    !row.Amount ||
+                    !row.Description ||
+                    !row.Type
+                  ) {
+                    invalidRows.push(
+                      `Row ${index + 1}: Missing required fields.`
+                    );
+                    return null;
+                  }
 
-                // Convert values to correct types
-                const amount = parseFloat(row.Amount);
-                if (isNaN(amount)) {
-                  invalidRows.push(`Row ${index + 1}: Invalid amount value (${row.Amount}).`);
-                  return null;
-                }
+                  // Convert values to correct types
+                  const amount = parseFloat(row.Amount);
+                  if (isNaN(amount)) {
+                    invalidRows.push(
+                      `Row ${index + 1}: Invalid amount value (${row.Amount}).`
+                    );
+                    return null;
+                  }
 
-                return {
-                  id: crypto.randomUUID(),
-                  date: new Date(row.Date).toISOString(),
-                  amount: row.Type.toLowerCase() === "withdrawal" ? -Math.abs(amount) : Math.abs(amount),
-                  description: row.Description.trim(),
-                  type: row.Type.toLowerCase(),
-                  createdAt: new Date().getTime(),
-                };
-              }).filter((transaction): transaction is Transaction => transaction !== null); // Remove invalid transactions
+                  return {
+                    id: crypto.randomUUID(),
+                    date: new Date(row.Date).toISOString(),
+                    amount:
+                      row.Type.toLowerCase() === "withdrawal"
+                        ? -Math.abs(amount)
+                        : Math.abs(amount),
+                    description: row.Description.trim(),
+                    type: row.Type.toLowerCase(),
+                    createdAt: new Date().getTime(),
+                  };
+                })
+                .filter(
+                  (transaction): transaction is Transaction =>
+                    transaction !== null
+                ); // Remove invalid transactions
 
               if (invalidRows.length > 0) {
-                alert(`Import completed with errors:\n\n${invalidRows.slice(0, 10).join("\n")}${invalidRows.length > 10 ? `\n...and ${invalidRows.length - 10} more errors.` : ""}`);
+                alert(
+                  `Import completed with errors:\n\n${invalidRows
+                    .slice(0, 10)
+                    .join("\n")}${
+                    invalidRows.length > 10
+                      ? `\n...and ${invalidRows.length - 10} more errors.`
+                      : ""
+                  }`
+                );
               }
 
               if (parsedTransactions.length === 0) {

@@ -25,6 +25,7 @@ export interface TransactionStore {
   currentPage: number;
   transactionsPerPage: number;
   setTransactionPerPage: (perPage: number) => void;
+  isFilterActive: () => boolean;
   setCurrentPage: (page: number) => void;
   getTotalFilteredTransactions: () => number;
   setEditingTransactionId: (id: `${string}-${string}-${string}-${string}-${string}` | null) => void;
@@ -44,4 +45,5 @@ export interface TransactionStore {
   getFilteredTransactions: () => Transaction[];
   exportTransactionsAsCSV: () => void;
   importTransactionsFromCSV: (file: File) => void;
+  clearLastAddedTransaction: () => void;
 }

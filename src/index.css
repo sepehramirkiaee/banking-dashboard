@@ -2,6 +2,6 @@
 
 @theme {
   --font-display: "Inter", "sans-serif";
-  --font-display--font-feature-settings: "cv01","cv02","cv03","cv04", "cv09"; 
+  --font-display--font-feature-settings: "cv01","cv02","cv03","cv04", "cv09","cv11"; 
   --font-display--font-variation-settings: "opsz" 32; 
 }

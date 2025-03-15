@@ -1,79 +1,102 @@
 import { useTransactionStore } from "@/store/useTransactionStore";
 import TransactionItem from "./transaction-list/TransactionItem";
 import TransactionFilter from "./transaction-list/TransactionFilter";
+import Card from "../common/ui/Card";
+import { useState } from "react";
+import { ArrowDownOnSquareIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, ExclamationTriangleIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { classNames } from "@/utils/classNames";
 
 const TransactionList = () => {
-  const { getFilteredTransactions, importTransactionsFromCSV, getTotalFilteredTransactions, setTransactionPerPage, currentPage, setCurrentPage, transactionsPerPage, exportTransactionsAsCSV } = useTransactionStore();
+  const { getFilteredTransactions, getTotalFilteredTransactions, isFilterActive, currentPage, setCurrentPage, transactionsPerPage, exportTransactionsAsCSV } = useTransactionStore();
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const transactions = getFilteredTransactions();
   const totalTransactions = getTotalFilteredTransactions();
   const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      importTransactionsFromCSV(file);
-    } else {
-      alert("No file selected.");
-    }
-  };
-
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-      <h3 className="text-lg font-semibold text-gray-700 mb-3">📜 Transaction History</h3>
-      <TransactionFilter />
+    <div>
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="font-semibold">Transaction History</h2>
 
-      <button
-        onClick={exportTransactionsAsCSV}
-        className="bg-green-500 text-white px-4 py-2 rounded mb-4 hover:bg-green-600"
-      >
-        📥 Export CSV
-      </button>
+      </div>
+      {isFilterOpen && <TransactionFilter setIsFilterOpen={setIsFilterOpen} />}
 
-      {/* ✅ CSV Upload Button */}
-      <input
-        type="file"
-        accept=".csv"
-        onChange={handleFileUpload}
-        className="mb-4"
-      />
+      <div className="flex items-center gap-2 mb-4">
+        {(transactions.length > 0 || isFilterActive()) && (
+          <button
+            onClick={() => setIsFilterOpen(true)}
+            // className="bg-indigo-50 cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100"
+            className={classNames("bg-indigo-50 relative cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100", {
+              "bg-indigo-600 text-white hover:bg-indigo-700": isFilterActive(),
+            })}
+          >
+            {isFilterActive() && (
+              <div className="absolute  flex items-center justify-center right-0 top-4">
+                <span className="w-2 h-2 rounded-full border border-indigo-600 bg-white" />
+                <span className="w-2 h-2 rounded-full  animate-ping bg-white absolute" />
+              </div>
+            )}
+            <FunnelIcon className="size-4" />
+            <span>Filter</span>
+          </button>
+        )}
 
-      {transactions.length > 0 ? (
-        <ul className="divide-y divide-gray-200">
-          {transactions.map((transaction) => (
-            <TransactionItem key={transaction.id} transaction={transaction} />
-          ))}
-        </ul>
-      ) : (
-        <p className="text-gray-500 text-center mt-4">No transactions recorded yet.</p>
-      )}
+        {transactions.length > 0 && (
+          <button
+            onClick={exportTransactionsAsCSV}
+            className="bg-indigo-50 cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100"
+          >
+            <ArrowDownOnSquareIcon className="size-4" />
+            <span>Export as CSV</span>
+          </button>
+        )}
+
+      </div>
+
+      <Card>
+        {transactions.length > 0 ? (
+          <ul className="divide-y divide-gray-200">
+            {transactions.map((transaction) => (
+              <TransactionItem key={transaction.id} transaction={transaction} />
+            ))}
+          </ul>
+        ) : (
+          <div className="text-gray-500 text-center text-sm p-2 flex items-center justify-center gap-1">
+            <ExclamationTriangleIcon className="size-5" />
+            <p>No transactions recorded yet.</p>
+          </div>
+        )}
+      </Card>
+
 
       {/* ✅ Pagination Controls */}
       {totalPages > 0 && (
-        <div className="flex justify-center items-center gap-4 mt-4">
+        <div className="flex justify-center items-center gap-4 mt-4 text-sm text-gray-700">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            className={` ${currentPage === 1 ? "opacity-30" : "cursor-pointer"}`}
           >
-            Previous
+            <ArrowLeftCircleIcon className="size-6" />
+
           </button>
 
-          <span className="text-gray-700">
+          <span>
             Page {currentPage} of {totalPages}
           </span>
 
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+            className={`${currentPage === totalPages ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
           >
-            Next
+            <ArrowRightCircleIcon className="size-6" />
           </button>
-          <input
+          {/* <input
             type="number"
             value={transactionsPerPage}
             onChange={(e) => setTransactionPerPage(Number(e.target.value))}
-            className="p-2 border rounded text-center w-20" />
+            className="p-2 border rounded text-center w-20" /> */}
         </div>
       )}
     </div>

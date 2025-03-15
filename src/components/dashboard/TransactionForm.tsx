@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
+import Overlay from "../common/ui/Overlay";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import Card from "../common/ui/Card";
 
-const TransactionForm = () => {
-  const { addTransaction, duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, lastAddedTransaction, undoLastTransaction, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+interface TransactionFormProps {
+  setIsFormOpen: (value: boolean) => void;
+}
+
+const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
+  const { addTransaction, duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
@@ -85,6 +92,8 @@ const TransactionForm = () => {
     setType("deposit");
     setDate(new Date().toISOString().split("T")[0]);
     setEditingTransactionId(null);
+    setDuplicatingTransaction(null);
+    setIsFormOpen(false)
   }
 
   useEffect(() => {
@@ -99,90 +108,89 @@ const TransactionForm = () => {
         setType(transaction.type);
         setDate(transaction.date.split("T")[0]);
       }
-    } else {
-      handleResetForm();
     }
   }, [editingTransactionId]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="bg-white p-4 shadow-md rounded-lg">
-        <h3 className="text-lg font-semibold mb-3">➕ Add Transaction</h3>
+    <Overlay className="flex items-center justify-center">
+      <div className="w-full m-4 md:w-1/2">
+        <Card>
+          <div className="p-6">
+            <form onSubmit={handleSubmit}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Add Transaction</h3>
+                <XMarkIcon onClick={handleResetForm} className="size-5 cursor-pointer" />
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="block text-gray-800 text-sm font-medium">Amount</label>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => {
+                      // Prevent negative input from being typed
+                      const value = e.target.value;
+                      if (value === "" || Number(value) > 0) setAmount(value);
+                    }}
+                    className="w-full p-2 border rounded border-gray-300 text-sm"
+                    placeholder="Enter amount"
+                  />
+                </div>
 
-        <div className="mb-2">
-          <label className="block text-gray-700">Amount:</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => {
-              // Prevent negative input from being typed
-              const value = e.target.value;
-              if (value === "" || Number(value) > 0) setAmount(value);
-            }}
-            className="w-full p-2 border rounded"
-            placeholder="Enter amount"
-          />
-        </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-gray-800 text-sm font-medium">Description</label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full p-2 border rounded border-gray-300 text-sm"
+                    placeholder="Enter description"
+                  />
+                </div>
 
-        <div className="mb-2">
-          <label className="block text-gray-700">Description:</label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border rounded"
-            placeholder="Enter description"
-          />
-        </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-gray-800 text-sm font-medium">Transaction Date</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full p-2 border rounded border-gray-300 text-sm"
+                  />
+                </div>
 
-        <div className="mb-2">
-          <label className="block text-gray-700">Transaction Date:</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full p-2 border rounded"
-          />
-        </div>
-
-        <div className="mb-2">
-          <label className="block text-gray-700">Type:</label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
-            className="w-full p-2 border rounded"
-          >
-            <option value="deposit">Deposit</option>
-            <option value="withdrawal">Withdrawal</option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          {editingTransactionId ? "Update Transaction" : "Add Transaction"}
-        </button>
-        {editingTransactionId && (
-          <button
-            type="button"
-            onClick={handleResetForm}
-            className="w-full bg-gray-500 text-white p-2 rounded mt-2 hover:bg-gray-600">
-            Cancel
-          </button>
-        )}
-      </form>
-      {lastAddedTransaction && (
-        <div className="flex items-center justify-between bg-indigo-50 p-4 mt-4 rounded-lg">
-          <p>You can undo the last transaction</p>
-          <button
-            onClick={undoLastTransaction}
-            className="text-blue-500 hover:underline">
-            Undo Last Transaction
-          </button>
-        </div>
-      )}
-    </>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-gray-800 text-sm font-medium">Type</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
+                    className="w-full p-2 border rounded border-gray-300 text-sm"
+                  >
+                    <option value="deposit">Deposit</option>
+                    <option value="withdrawal">Withdrawal</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="submit"
+                    className="w-full text-sm font-medium bg-indigo-700 text-white p-2 rounded hover:bg-ingido-700 cursor-pointer hover:bg-indigo-800"
+                  >
+                    {editingTransactionId ? "Update Transaction" : "Add Transaction"}
+                  </button>
+                  {editingTransactionId && (
+                    <button
+                      type="button"
+                      onClick={handleResetForm}
+                      className="w-full text-sm bg-gray-100 p-2 rounded border border-gray-200 hover:bg-gray-200 cursor-pointer">
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+            </form>
+          </div>
+        </Card>
+      </div>
+    </Overlay>
   );
 };
 
