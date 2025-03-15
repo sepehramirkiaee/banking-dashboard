@@ -1,7 +1,7 @@
 export type TransactionType = "deposit" | "withdrawal";
 
 export interface Transaction {
-  id: string;
+  id: `${string}-${string}-${string}-${string}-${string}`;
   amount: number;
   description: string;
   date: string;
@@ -9,17 +9,25 @@ export interface Transaction {
   createdAt: number;
 }
 
+export interface CSVTransactionRow {
+  Date: string;
+  Amount: string;
+  Description: string;
+  Type: string;
+}
+
+
 export interface TransactionStore {
   transactions: Transaction[];
   lastAddedTransaction: Transaction | null;
-  editingTransactionId: string | null;
+  editingTransactionId: `${string}-${string}-${string}-${string}-${string}` | null;
   duplicatingTransaction: Transaction | null;
   currentPage: number;
   transactionsPerPage: number;
   setTransactionPerPage: (perPage: number) => void;
   setCurrentPage: (page: number) => void;
   getTotalFilteredTransactions: () => number;
-  setEditingTransactionId: (id: string | null) => void;
+  setEditingTransactionId: (id: `${string}-${string}-${string}-${string}-${string}` | null) => void;
   addTransaction: (transaction: Transaction) => void;
   removeTransaction: (id: string) => void;
   resetTransactions: () => void;
@@ -35,4 +43,5 @@ export interface TransactionStore {
   setFilters: (filters: Partial<TransactionStore["filters"]>) => void;
   getFilteredTransactions: () => Transaction[];
   exportTransactionsAsCSV: () => void;
+  importTransactionsFromCSV: (file: File) => void;
 }

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 // import localforage from "localforage";
-import { TransactionStore } from "../types";
+import { CSVTransactionRow, Transaction, TransactionStore } from "../types";
 import Papa from "papaparse";
 
 export const useTransactionStore = create<TransactionStore>()(
@@ -17,8 +17,8 @@ export const useTransactionStore = create<TransactionStore>()(
         description: "",
       },
 
-      currentPage: 1, // ✅ Track current page
-      transactionsPerPage: 1, // ✅ Set default items per page
+      currentPage: 1, // Track current page
+      transactionsPerPage: 1, // Set default items per page
       setTransactionPerPage: (perPage: number) => set(() => ({ transactionsPerPage: perPage })),
 
       setFilters: (filters) =>
@@ -44,7 +44,7 @@ export const useTransactionStore = create<TransactionStore>()(
           return true;
         });
 
-        // ✅ Sort transactions before pagination
+        // Sort transactions before pagination
         const sortedTransactions = [...filteredTransactions].sort((a, b) => {
           const dateA = new Date(a.date).getTime();
           const dateB = new Date(b.date).getTime();
@@ -57,7 +57,7 @@ export const useTransactionStore = create<TransactionStore>()(
           return dateB - dateA;
         });
 
-        // ✅ Apply pagination: slice transactions based on current page
+        // Apply pagination: slice transactions based on current page
         const startIndex = (currentPage - 1) * transactionsPerPage;
         const endIndex = startIndex + transactionsPerPage;
         return sortedTransactions.slice(startIndex, endIndex);
@@ -123,7 +123,7 @@ export const useTransactionStore = create<TransactionStore>()(
       },
 
       editingTransactionId: null,
-      setEditingTransactionId: (id: string | null) =>
+      setEditingTransactionId: (id: `${string}-${string}-${string}-${string}-${string}` | null) =>
         set(() => ({ editingTransactionId: id })),
 
       duplicatingTransaction: null,
@@ -139,18 +139,18 @@ export const useTransactionStore = create<TransactionStore>()(
           return;
         }
       
-        // ✅ Convert transactions to CSV format
+        // Convert transactions to CSV format
         const csvData = filteredTransactions.map(({ date, amount, description, type }) => ({
           Date: new Date(date).toISOString().split("T")[0], // Format date as YYYY-MM-DD
-          Amount: type === "withdrawal" ? `-${Math.abs(amount).toFixed(2)}` : amount.toFixed(2), // ✅ Ensure Withdrawals have "-"
+          Amount: type === "withdrawal" ? `-${Math.abs(amount).toFixed(2)}` : amount.toFixed(2), // Ensure Withdrawals have "-"
           Description: description,
           Type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter (Deposit, Withdrawal)
         }));
       
-        // ✅ Convert JSON to CSV format
+        // Convert JSON to CSV format
         const csvString = Papa.unparse(csvData);
       
-        // ✅ Generate filename with correct local time
+        // Generate filename with correct local time
         const now = new Date();
         const localDateTime = now.toLocaleString("en-GB", {
           year: "numeric",
@@ -160,14 +160,14 @@ export const useTransactionStore = create<TransactionStore>()(
           minute: "2-digit",
           second: "2-digit",
           hour12: false,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // ✅ Use user's local timezone
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use user's local timezone
         });
       
-        // ✅ Format the filename correctly
+        // Format the filename correctly
         const formattedDateTime = localDateTime.replace(/[/,:\s]/g, "-"); // Replace problematic characters
         const filename = `transactions_${formattedDateTime}.csv`;
       
-        // ✅ Trigger CSV file download
+        // Trigger CSV file download
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -176,7 +176,66 @@ export const useTransactionStore = create<TransactionStore>()(
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      }
+      },
+
+      importTransactionsFromCSV: (file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const csvText = event.target?.result;
+          if (typeof csvText !== "string") return;
+
+          // Parse CSV
+          Papa.parse<CSVTransactionRow>(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (result) => {
+              const invalidRows: string[] = [];
+              const parsedTransactions = result.data.map((row: CSVTransactionRow, index) => {                // Validate required fields
+                if (!row.Date || !row.Amount || !row.Description || !row.Type) {
+                  invalidRows.push(`Row ${index + 1}: Missing required fields.`);
+                  return null;
+                }
+
+                // Convert values to correct types
+                const amount = parseFloat(row.Amount);
+                if (isNaN(amount)) {
+                  invalidRows.push(`Row ${index + 1}: Invalid amount value (${row.Amount}).`);
+                  return null;
+                }
+
+                return {
+                  id: crypto.randomUUID(),
+                  date: new Date(row.Date).toISOString(),
+                  amount: row.Type.toLowerCase() === "withdrawal" ? -Math.abs(amount) : Math.abs(amount),
+                  description: row.Description.trim(),
+                  type: row.Type.toLowerCase(),
+                  createdAt: new Date().getTime(),
+                };
+              }).filter((transaction): transaction is Transaction => transaction !== null); // Remove invalid transactions
+
+              if (invalidRows.length > 0) {
+                alert(`Import completed with errors:\n\n${invalidRows.slice(0, 10).join("\n")}${invalidRows.length > 10 ? `\n...and ${invalidRows.length - 10} more errors.` : ""}`);
+              }
+
+              if (parsedTransactions.length === 0) {
+                alert("No valid transactions found in the CSV file.");
+                return;
+              }
+
+              // Add imported transactions to state
+              set((state) => ({
+                transactions: [...state.transactions, ...parsedTransactions],
+              }));
+
+              alert("Transactions imported successfully!");
+            },
+            error: (error: Error) => {
+              alert(`Error reading CSV file: ${error.message}`);
+            },
+          });
+        };
+        reader.readAsText(file);
+      },
     }),
     {
       name: "transactions",

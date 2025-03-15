@@ -3,10 +3,19 @@ import TransactionItem from "./transaction-list/TransactionItem";
 import TransactionFilter from "./transaction-list/TransactionFilter";
 
 const TransactionList = () => {
-  const { getFilteredTransactions, getTotalFilteredTransactions, setTransactionPerPage, currentPage, setCurrentPage, transactionsPerPage, exportTransactionsAsCSV } = useTransactionStore();
+  const { getFilteredTransactions, importTransactionsFromCSV, getTotalFilteredTransactions, setTransactionPerPage, currentPage, setCurrentPage, transactionsPerPage, exportTransactionsAsCSV } = useTransactionStore();
   const transactions = getFilteredTransactions();
   const totalTransactions = getTotalFilteredTransactions();
   const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      importTransactionsFromCSV(file);
+    } else {
+      alert("No file selected.");
+    }
+  };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4 mt-4">
@@ -19,6 +28,14 @@ const TransactionList = () => {
       >
         📥 Export CSV
       </button>
+
+      {/* ✅ CSV Upload Button */}
+      <input
+        type="file"
+        accept=".csv"
+        onChange={handleFileUpload}
+        className="mb-4"
+      />
 
       {transactions.length > 0 ? (
         <ul className="divide-y divide-gray-200">
