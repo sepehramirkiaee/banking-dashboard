@@ -10,18 +10,24 @@ export default function UndoTransaction() {
   useEffect(() => {
     if (!lastAddedTransaction) return
     setProgress(0)
+    let timeout: NodeJS.Timeout;
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
-          clearUndoNotification()
+          timeout = setTimeout(() => {
+            clearLastAddedTransaction();
+          }, 100); 
           return 100
         }
         return prev + 10
       })
     }, 1000)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout); // ✅ Ensure cleanup
+    };
   }, [lastAddedTransaction])
 
   const clearUndoNotification = () => {
@@ -31,7 +37,7 @@ export default function UndoTransaction() {
   if (!lastAddedTransaction) return null
 
   return createPortal(
-    <div className='relative m-4 bg-indigo-700 text-white p-4 rounded-lg shadow-2xl text-sm'>
+    <div className='relative m-4 bg-indigo-700 text-white p-4 rounded-lg shadow-lg text-sm'>
       <div className='bg-indigo-600 transition-all absolute inset-0 rounded-lg z-10'
         style={{ width: `${progress}%` }}
       ></div>
@@ -47,7 +53,6 @@ export default function UndoTransaction() {
           Undo
         </button>
       </div>
-
       
     </div>,
     document.getElementById('notification-root')!

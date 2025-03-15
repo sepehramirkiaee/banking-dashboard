@@ -126,6 +126,14 @@ export const useTransactionStore = create<TransactionStore>()(
           transactions: state.transactions.filter((t) => t.id !== id),
         })),
 
+      updateTransaction: (updatedTransaction) => {
+        set((state) => ({
+          transactions: state.transactions.map((t) =>
+            t.id === updatedTransaction.id ? updatedTransaction : t
+          ),
+        }));
+      },
+
       resetTransactions: () =>
         set(() => {
           localStorage.removeItem("transactions");

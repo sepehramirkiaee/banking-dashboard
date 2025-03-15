@@ -46,4 +46,5 @@ export interface TransactionStore {
   exportTransactionsAsCSV: () => void;
   importTransactionsFromCSV: (file: File) => void;
   clearLastAddedTransaction: () => void;
+  updateTransaction: (transaction: Transaction) => void;
 }

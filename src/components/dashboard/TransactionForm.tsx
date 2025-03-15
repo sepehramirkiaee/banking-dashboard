@@ -9,7 +9,7 @@ interface TransactionFormProps {
 }
 
 const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
-  const { addTransaction, duplicatingTransaction, setDuplicatingTransaction, removeTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+  const { addTransaction,updateTransaction, duplicatingTransaction, setDuplicatingTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
@@ -60,14 +60,16 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     }
 
     if (editingTransactionId) {
-      removeTransaction(editingTransactionId);
-      addTransaction({
+      const transaction = transactions.find(
+        (t) => t.id === editingTransactionId
+      );
+      updateTransaction({
         id: editingTransactionId,
         amount: numericAmount,
         description: trimmedDescription,
         date: new Date(date).toISOString(),
         type,
-        createdAt: new Date().getTime(),
+        createdAt: transaction?.createdAt || new Date().getTime(),
       });
 
       setEditingTransactionId(null);

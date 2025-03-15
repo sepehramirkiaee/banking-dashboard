@@ -5,7 +5,6 @@ import Card from "../common/ui/Card";
 const AccountOverview = () => {
   const { transactions, getTotalBalance } = useTransactionStore();
 
-
   // Calculate Total Income
   const totalIncome = transactions
     .filter((t) => t.type === 'deposit')
