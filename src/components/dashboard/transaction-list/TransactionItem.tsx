@@ -4,21 +4,20 @@ import { Transaction } from "@/types";
 import { DocumentDuplicateIcon, EllipsisVerticalIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ActionButton from "./transaction-item/ActionButton";
 import { useNotification } from "@/hooks/useNotification";
+import ConfirmationDialog from "@/components/common/ui/ConfirmationDialog";
 
 export default function TransactionItem({ transaction }: { transaction: Transaction }) {
   const { removeTransaction, setEditingTransactionId, editingTransactionId, setDuplicatingTransaction } = useTransactionStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { addNotification } = useNotification();
 
-  const handleRemove = (id: string) => {
-    const confirmed = window.confirm("Are you sure you want to remove this transaction?");
-    if (confirmed) {
-      if (editingTransactionId === id) {
+  const handleRemove = () => {
+      if (editingTransactionId === transaction.id) {
         setEditingTransactionId(null);
       }
-      removeTransaction(id, addNotification);
-    }
+      removeTransaction(transaction.id, addNotification);
   };
 
   // Close the menu when clicking outside
@@ -81,7 +80,7 @@ export default function TransactionItem({ transaction }: { transaction: Transact
             </ActionButton>
 
             <ActionButton onClick={() => {
-              handleRemove(transaction.id);
+              setIsDialogOpen(true);
               setIsMenuOpen(false);
             }}>
               <TrashIcon className="size-4" />
@@ -91,6 +90,19 @@ export default function TransactionItem({ transaction }: { transaction: Transact
           </div>
         )}
       </div>
+
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={isDialogOpen}
+        title="Delete Transaction"
+        message="Are you sure you want to remove this transaction?"
+        onConfirm={() => {
+          handleRemove();
+          setIsDialogOpen(false);
+        }}
+        onCancel={() => setIsDialogOpen(false)}
+      />
     </li>
   );
 }

@@ -28,6 +28,22 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     }
   }, [duplicatingTransaction, setDuplicatingTransaction]);
 
+  // Pre-fill form when editing a transaction
+  useEffect(() => {
+    if (editingTransactionId) {
+      const transaction = transactions.find(
+        (t) => t.id === editingTransactionId
+      );
+
+      if (transaction) {
+        setAmount(transaction.amount.toString());
+        setDescription(transaction.description);
+        setType(transaction.type);
+        setDate(transaction.date.split("T")[0]);
+      }
+    }
+  }, [editingTransactionId]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -61,6 +77,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
       }
     }
 
+    // Add or Update Transaction. Check if editing or adding
     if (editingTransactionId) {
       const transaction = transactions.find(
         (t) => t.id === editingTransactionId
@@ -92,6 +109,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     handleResetForm();
   };
 
+  // Reset Form Inputs
   const handleResetForm = () => {
     setAmount("");
     setDescription("");
@@ -101,21 +119,6 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     setDuplicatingTransaction(null);
     setIsFormOpen(false)
   }
-
-  useEffect(() => {
-    if (editingTransactionId) {
-      const transaction = transactions.find(
-        (t) => t.id === editingTransactionId
-      );
-
-      if (transaction) {
-        setAmount(transaction.amount.toString());
-        setDescription(transaction.description);
-        setType(transaction.type);
-        setDate(transaction.date.split("T")[0]);
-      }
-    }
-  }, [editingTransactionId]);
 
   return (
     <Overlay className="flex items-center justify-center">
