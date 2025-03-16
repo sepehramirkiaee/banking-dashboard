@@ -277,10 +277,7 @@ export const useTransactionStore = create<TransactionStore>()(
                   return {
                     id: crypto.randomUUID(),
                     date: new Date(row.Date).toISOString(),
-                    amount:
-                      row.Type.toLowerCase() === "withdrawal"
-                        ? -Math.abs(amount)
-                        : Math.abs(amount),
+                    amount: Math.abs(amount),
                     description: row.Description.trim(),
                     type: row.Type.toLowerCase() as TransactionType,
                     createdAt: Date.now(),
