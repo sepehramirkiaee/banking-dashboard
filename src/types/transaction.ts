@@ -1,3 +1,16 @@
+import { NotificationType } from "./notification";
+
+/* ==========================
+ * Notify(addNotification) Params Types
+ * ========================== */
+export type NotifyParamsType = (
+  message: string,
+  type: NotificationType
+) => void;
+
+/* ==========================
+ * Transaction Types
+ * ========================== */
 export type TransactionType = "deposit" | "withdrawal";
 
 export interface Transaction {
@@ -9,6 +22,9 @@ export interface Transaction {
   createdAt: number;
 }
 
+/* ==========================
+ * CSV Structure
+ * ========================== */
 export interface CSVTransactionRow {
   Date: string;
   Amount: string;
@@ -16,25 +32,37 @@ export interface CSVTransactionRow {
   Type: string;
 }
 
-
+/* ==========================
+ * Store State & Methods
+ * ========================== */
 export interface TransactionStore {
+  /* ===== Transactions Management ===== */
   transactions: Transaction[];
   lastAddedTransaction: Transaction | null;
-  editingTransactionId: `${string}-${string}-${string}-${string}-${string}` | null;
+  addTransaction: (transaction: Transaction, notify: NotifyParamsType) => void;
+  removeTransaction: (id: string, notify: NotifyParamsType) => void;
+  updateTransaction: (transaction: Transaction, notify: NotifyParamsType) => void;
+  resetTransactions: () => void;
+  undoLastTransaction: (notify: NotifyParamsType) => void;
+  clearLastAddedTransaction: () => void;
+
+  /* ===== Editing & Duplicating ===== */
+  editingTransactionId:
+    | `${string}-${string}-${string}-${string}-${string}`
+    | null;
   duplicatingTransaction: Transaction | null;
+  setEditingTransactionId: (
+    id: `${string}-${string}-${string}-${string}-${string}` | null
+  ) => void;
+  setDuplicatingTransaction: (transaction: Transaction | null) => void;
+
+  /* ===== Filtering & Pagination ===== */
   currentPage: number;
   transactionsPerPage: number;
   setTransactionPerPage: (perPage: number) => void;
-  isFilterActive: () => boolean;
   setCurrentPage: (page: number) => void;
-  getTotalFilteredTransactions: () => number;
-  setEditingTransactionId: (id: `${string}-${string}-${string}-${string}-${string}` | null) => void;
-  addTransaction: (transaction: Transaction) => void;
-  removeTransaction: (id: string) => void;
-  resetTransactions: () => void;
-  getTotalBalance: () => number;
-  undoLastTransaction: () => void;
-  setDuplicatingTransaction: (transaction: Transaction | null) => void;
+  isFilterActive: () => boolean;
+
   filters: {
     type: "all" | TransactionType;
     startDate: string;
@@ -43,8 +71,12 @@ export interface TransactionStore {
   };
   setFilters: (filters: Partial<TransactionStore["filters"]>) => void;
   getFilteredTransactions: () => Transaction[];
-  exportTransactionsAsCSV: () => void;
-  importTransactionsFromCSV: (file: File) => void;
-  clearLastAddedTransaction: () => void;
-  updateTransaction: (transaction: Transaction) => void;
+  getTotalFilteredTransactions: () => number;
+
+  /* ===== Computed Values ===== */
+  getTotalBalance: () => number;
+
+  /* ===== CSV Import & Export ===== */
+  exportTransactionsAsCSV: (notify: NotifyParamsType) => void;
+  importTransactionsFromCSV: (file: File, notify: NotifyParamsType) => void;
 }

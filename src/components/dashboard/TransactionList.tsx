@@ -5,6 +5,7 @@ import Card from "../common/ui/Card";
 import { useState } from "react";
 import { ArrowDownOnSquareIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon, ExclamationTriangleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "@/utils/classNames";
+import { useNotification } from "@/hooks/useNotification";
 
 const TransactionList = () => {
   const { getFilteredTransactions, getTotalFilteredTransactions, isFilterActive, currentPage, setCurrentPage, transactionsPerPage, exportTransactionsAsCSV } = useTransactionStore();
@@ -12,7 +13,10 @@ const TransactionList = () => {
   const transactions = getFilteredTransactions();
   const totalTransactions = getTotalFilteredTransactions();
   const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
-
+  const { addNotification } = useNotification();
+  const handleExportClick = () => {
+    exportTransactionsAsCSV(addNotification);
+  };
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
@@ -43,7 +47,7 @@ const TransactionList = () => {
 
         {transactions.length > 0 && (
           <button
-            onClick={exportTransactionsAsCSV}
+            onClick={handleExportClick}
             className="bg-indigo-50 cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100"
           >
             <ArrowDownOnSquareIcon className="size-4" />

@@ -2,10 +2,12 @@ import { useTransactionStore } from '@/store/useTransactionStore'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useNotification } from '@/hooks/useNotification'
 
 export default function UndoTransaction() {
   const { lastAddedTransaction, undoLastTransaction, clearLastAddedTransaction } = useTransactionStore()
   const [progress, setProgress] = useState(0)
+  const { addNotification } = useNotification()
 
   useEffect(() => {
     if (!lastAddedTransaction) return
@@ -17,7 +19,7 @@ export default function UndoTransaction() {
           clearInterval(interval)
           timeout = setTimeout(() => {
             clearLastAddedTransaction();
-          }, 100); 
+          }, 100);
           return 100
         }
         return prev + 10
@@ -34,6 +36,10 @@ export default function UndoTransaction() {
     clearLastAddedTransaction()
   }
 
+  const handleClickUndo = () => {
+    undoLastTransaction(addNotification)
+  }
+
   if (!lastAddedTransaction) return null
 
   return createPortal(
@@ -47,13 +53,13 @@ export default function UndoTransaction() {
         </button>
         <p className='grow'>You can undo the last transaction</p>
         <button
-          onClick={undoLastTransaction}
+          onClick={handleClickUndo}
           className="text-indigo-200 hover:underline cursor-pointer"
         >
           Undo
         </button>
       </div>
-      
+
     </div>,
     document.getElementById('notification-root')!
   )

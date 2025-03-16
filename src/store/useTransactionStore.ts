@@ -1,46 +1,115 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-// import localforage from "localforage";
-import { CSVTransactionRow, Transaction, TransactionStore } from "../types";
 import Papa from "papaparse";
+import {
+  CSVTransactionRow,
+  Transaction,
+  TransactionStore,
+  TransactionType,
+} from "../types";
+import { sortTransactions } from "../utils/transaction";
 
 export const useTransactionStore = create<TransactionStore>()(
   persist(
     (set, get) => ({
+      /* ==========================
+       * Transactions Management
+       * ========================== */
       transactions: [],
-      lastAddedTransaction: null, // Track last added transaction
+      lastAddedTransaction: null,
 
+      editingTransactionId: null,
+      duplicatingTransaction: null,
+
+      addTransaction: (transaction, notify) => {
+        set((state) => ({
+          transactions: [...state.transactions, transaction],
+          lastAddedTransaction: transaction,
+        }));
+        notify("Transaction added successfully!", "success");
+      },
+
+      removeTransaction: (id, notify) => {
+        set((state) => ({
+          transactions: state.transactions.filter((t) => t.id !== id),
+        }));
+        notify("Transaction removed successfully!", "success");
+      },
+
+      updateTransaction: (updatedTransaction, notify) => {
+        set((state) => ({
+          transactions: state.transactions.map((t) =>
+            t.id === updatedTransaction.id ? updatedTransaction : t
+          ),
+        }));
+        notify("Transaction updated successfully!", "success");
+      },
+
+      resetTransactions: () =>
+        set(() => ({
+          transactions: [],
+          lastAddedTransaction: null,
+        })),
+
+      clearLastAddedTransaction: () =>
+        set(() => ({ lastAddedTransaction: null })),
+
+      undoLastTransaction: (notify) => {
+        set((state) => {
+          if (!state.lastAddedTransaction) return state;
+          return {
+            transactions: state.transactions.filter(
+              (t) => t.id !== state.lastAddedTransaction!.id
+            ),
+            lastAddedTransaction: null,
+          };
+        });
+        notify("Last transaction undone!", "success");
+      },
+
+      /* ==========================
+       * Filtering & Pagination
+       * ========================== */
       filters: {
-        type: "all", // "all", "deposit", "withdrawal"
+        type: "all",
         startDate: "",
         endDate: "",
         description: "",
       },
 
-      isFilterActive: () => {
-        const { filters } = get();
-        const initialFilters = {
-          type: "all",
-          startDate: "",
-          endDate: "",
-          description: "",
-        };
-
-        return JSON.stringify(filters) !== JSON.stringify(initialFilters);
-      },
-
-      currentPage: 1, // Track current page
-      transactionsPerPage: 20, // Set default items per page
-      setTransactionPerPage: (perPage: number) =>
-        set(() => ({ transactionsPerPage: perPage })),
+      currentPage: 1,
+      transactionsPerPage: 20,
 
       setFilters: (filters) =>
         set((state) => ({
           filters: { ...state.filters, ...filters },
           currentPage: 1,
-        })), // Reset to first page when filters change
+        })),
 
       setCurrentPage: (page: number) => set(() => ({ currentPage: page })),
+
+      setEditingTransactionId: (
+        id: `${string}-${string}-${string}-${string}-${string}` | null
+      ) => set(() => ({ editingTransactionId: id })),
+
+      setDuplicatingTransaction: (transaction: Transaction | null) =>
+        set(() => ({ duplicatingTransaction: transaction })),
+
+      setTransactionPerPage: (perPage: number) =>
+        set(() => ({ transactionsPerPage: perPage })),
+
+      isFilterActive: () => {
+        const { filters } = get();
+        return (
+          JSON.stringify(filters) !==
+          JSON.stringify({
+            type: "all",
+            startDate: "",
+            endDate: "",
+            description: "",
+          })
+        );
+      },
 
       getFilteredTransactions: () => {
         const { transactions, filters, currentPage, transactionsPerPage } =
@@ -69,20 +138,8 @@ export const useTransactionStore = create<TransactionStore>()(
           return true;
         });
 
-        // Sort transactions before pagination
-        const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-          const dateA = new Date(a.date).getTime();
-          const dateB = new Date(b.date).getTime();
-
-          // If dates are the same, compare by `createdAt` timestamp
-          if (dateA === dateB) {
-            return b.createdAt - a.createdAt; // Ensures newer transactions appear first
-          }
-
-          return dateB - dateA;
-        });
-
-        // Apply pagination: slice transactions based on current page
+        // Sort and paginate
+        const sortedTransactions = sortTransactions(filteredTransactions);
         const startIndex = (currentPage - 1) * transactionsPerPage;
         const endIndex = startIndex + transactionsPerPage;
         return sortedTransactions.slice(startIndex, endIndex);
@@ -115,112 +172,52 @@ export const useTransactionStore = create<TransactionStore>()(
         }).length;
       },
 
-      addTransaction: (transaction) =>
-        set((state) => ({
-          transactions: [...state.transactions, transaction],
-          lastAddedTransaction: transaction, // Store the last added transaction
-        })),
-
-      removeTransaction: (id) =>
-        set((state) => ({
-          transactions: state.transactions.filter((t) => t.id !== id),
-        })),
-
-      updateTransaction: (updatedTransaction) => {
-        set((state) => ({
-          transactions: state.transactions.map((t) =>
-            t.id === updatedTransaction.id ? updatedTransaction : t
-          ),
-        }));
-      },
-
-      resetTransactions: () =>
-        set(() => {
-          localStorage.removeItem("transactions");
-          return { transactions: [], lastAddedTransaction: null };
-        }),
-
-      clearLastAddedTransaction: () =>
-        set(() => ({ lastAddedTransaction: null })),
-
-      undoLastTransaction: () =>
-        set((state) => {
-          if (!state.lastAddedTransaction) return state;
-
-          return {
-            transactions: state.transactions.filter(
-              (t) => t.id !== state.lastAddedTransaction!.id
-            ),
-            lastAddedTransaction: null,
-          };
-        }),
-
-      // Computed Value
+      /* ==========================
+       * Computed Values
+       * ========================== */
       getTotalBalance: () => {
         const { transactions } = get();
         const totalIncome = transactions
           .filter((t) => t.type === "deposit")
           .reduce((acc, t) => acc + t.amount, 0);
-
         const totalExpenses = transactions
           .filter((t) => t.type === "withdrawal")
           .reduce((acc, t) => acc + Math.abs(t.amount), 0);
-
         return totalIncome - totalExpenses;
       },
 
-      editingTransactionId: null,
-      setEditingTransactionId: (
-        id: `${string}-${string}-${string}-${string}-${string}` | null
-      ) => set(() => ({ editingTransactionId: id })),
-
-      duplicatingTransaction: null,
-      setDuplicatingTransaction: (transaction) =>
-        set(() => ({ duplicatingTransaction: transaction })),
-
-      exportTransactionsAsCSV: () => {
+      /* ==========================
+       * CSV Import & Export
+       * ========================== */
+      exportTransactionsAsCSV: (notify) => {
         const { getFilteredTransactions } = get();
         const filteredTransactions = getFilteredTransactions();
 
         if (filteredTransactions.length === 0) {
-          alert("No transactions to export based on current filters.");
+          notify(
+            "No transactions to export based on current filters.",
+            "error"
+          );
           return;
         }
 
-        // Convert transactions to CSV format
         const csvData = filteredTransactions.map(
           ({ date, amount, description, type }) => ({
-            Date: new Date(date).toISOString().split("T")[0], // Format date as YYYY-MM-DD
+            Date: new Date(date).toISOString().split("T")[0],
             Amount:
               type === "withdrawal"
                 ? `-${Math.abs(amount).toFixed(2)}`
-                : amount.toFixed(2), // Ensure Withdrawals have "-"
+                : amount.toFixed(2),
             Description: description,
-            Type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize first letter (Deposit, Withdrawal)
+            Type: type.charAt(0).toUpperCase() + type.slice(1),
           })
         );
 
-        // Convert JSON to CSV format
         const csvString = Papa.unparse(csvData);
+        const filename = `transactions_${new Date()
+          .toISOString()
+          .replace(/[:.]/g, "-")}.csv`;
 
-        // Generate filename with correct local time
-        const now = new Date();
-        const localDateTime = now.toLocaleString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use user's local timezone
-        });
-
-        // Format the filename correctly
-        const formattedDateTime = localDateTime.replace(/[/,:\s]/g, "-"); // Replace problematic characters
-        const filename = `transactions_${formattedDateTime}.csv`;
-
-        // Trigger CSV file download
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -231,38 +228,48 @@ export const useTransactionStore = create<TransactionStore>()(
         document.body.removeChild(link);
       },
 
-      importTransactionsFromCSV: (file) => {
+      importTransactionsFromCSV: (file, notify) => {
         const reader = new FileReader();
+
         reader.onload = (event) => {
           const csvText = event.target?.result;
-          if (typeof csvText !== "string") return;
+          if (typeof csvText !== "string") {
+            notify("Invalid file format.", "error");
+            return;
+          }
 
-          // Parse CSV
           Papa.parse<CSVTransactionRow>(csvText, {
             header: true,
             skipEmptyLines: true,
             complete: (result) => {
-              const invalidRows: string[] = [];
-              const parsedTransactions = result.data
-                .map((row: CSVTransactionRow, index) => {
-                  // Validate required fields
+              if (result.errors.length > 0) {
+                notify(
+                  "Error parsing CSV file. Please check the file format.",
+                  "error"
+                );
+                return;
+              }
+
+              const parsedTransactions: Transaction[] = result.data
+                .map((row, index) => {
                   if (
                     !row.Date ||
                     !row.Amount ||
                     !row.Description ||
                     !row.Type
                   ) {
-                    invalidRows.push(
-                      `Row ${index + 1}: Missing required fields.`
+                    notify(
+                      `Row ${index + 1} is missing required fields.`,
+                      "error"
                     );
                     return null;
                   }
 
-                  // Convert values to correct types
                   const amount = parseFloat(row.Amount);
                   if (isNaN(amount)) {
-                    invalidRows.push(
-                      `Row ${index + 1}: Invalid amount value (${row.Amount}).`
+                    notify(
+                      `Row ${index + 1} has an invalid amount value.`,
+                      "error"
                     );
                     return null;
                   }
@@ -275,49 +282,33 @@ export const useTransactionStore = create<TransactionStore>()(
                         ? -Math.abs(amount)
                         : Math.abs(amount),
                     description: row.Description.trim(),
-                    type: row.Type.toLowerCase(),
-                    createdAt: new Date().getTime(),
+                    type: row.Type.toLowerCase() as TransactionType,
+                    createdAt: Date.now(),
                   };
                 })
-                .filter(
-                  (transaction): transaction is Transaction =>
-                    transaction !== null
-                ); // Remove invalid transactions
-
-              if (invalidRows.length > 0) {
-                alert(
-                  `Import completed with errors:\n\n${invalidRows
-                    .slice(0, 10)
-                    .join("\n")}${
-                    invalidRows.length > 10
-                      ? `\n...and ${invalidRows.length - 10} more errors.`
-                      : ""
-                  }`
-                );
-              }
+                .filter(Boolean) as Transaction[];
 
               if (parsedTransactions.length === 0) {
-                alert("No valid transactions found in the CSV file.");
+                notify("No valid transactions found in the CSV file.", "error");
                 return;
               }
 
-              // Add imported transactions to state
               set((state) => ({
                 transactions: [...state.transactions, ...parsedTransactions],
               }));
 
-              alert("Transactions imported successfully!");
-            },
-            error: (error: Error) => {
-              alert(`Error reading CSV file: ${error.message}`);
+              notify("Transactions imported successfully!", "success");
             },
           });
         };
+
+        reader.onerror = () => {
+          notify("Error reading the file.", "error");
+        };
+
         reader.readAsText(file);
       },
     }),
-    {
-      name: "transactions",
-    }
+    { name: "transactions" }
   )
 );

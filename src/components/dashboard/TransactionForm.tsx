@@ -3,17 +3,19 @@ import { useTransactionStore } from "@/store/useTransactionStore";
 import Overlay from "../common/ui/Overlay";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Card from "../common/ui/Card";
+import { useNotification } from "@/hooks/useNotification";
 
 interface TransactionFormProps {
   setIsFormOpen: (value: boolean) => void;
 }
 
 const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
-  const { addTransaction,updateTransaction, duplicatingTransaction, setDuplicatingTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
+  const { addTransaction, updateTransaction, duplicatingTransaction, setDuplicatingTransaction, getTotalBalance, editingTransactionId, setEditingTransactionId, transactions } = useTransactionStore();
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
+  const { addNotification } = useNotification()
 
   // Pre-fill form when duplicating a transaction
   useEffect(() => {
@@ -33,20 +35,20 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
 
     // Prevent negative values and zero
     if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
-      alert("Please enter a valid positive amount.");
+      addNotification('please enter a valid positive amount', 'error');
       return;
     }
 
     // Trim description to remove unnecessary spaces
     const trimmedDescription = description.trim();
     if (!trimmedDescription || trimmedDescription.length < 3 || trimmedDescription.length > 50) {
-      alert("Description must be between 3 and 50 characters.");
+      addNotification('Description must be between 3 and 50 characters.', 'error');
       return;
     }
 
     // Ensure Transaction Type is Selected
     if (!type) {
-      alert("Please select a transaction type.");
+      addNotification('Please select a transaction type.', 'error');
       return;
     }
 
@@ -54,7 +56,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     if (type === "withdrawal") {
       const totalBalance = getTotalBalance();
       if (numericAmount > totalBalance) {
-        alert("Insufficient balance! You cannot withdraw more than your available balance.");
+        addNotification('Insufficient balance! You cannot withdraw more than your available balance.', 'error');
         return;
       }
     }
@@ -70,7 +72,9 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
         date: new Date(date).toISOString(),
         type,
         createdAt: transaction?.createdAt || new Date().getTime(),
-      });
+      },
+        addNotification
+      );
 
       setEditingTransactionId(null);
     } else {
@@ -81,7 +85,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
         date: new Date(date).toISOString(),
         type,
         createdAt: new Date().getTime(),
-      });
+      }, addNotification);
     }
 
     // Reset Form Inputs After Submission

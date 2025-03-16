@@ -3,16 +3,14 @@ import UndoTransaction from "@/components/dashboard/UndoTransaction";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { CloudIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
-import useNotification from "@/hooks/useNotification";
-import NotificationContainer from "@/components/common/ui/NotificationContainer";
-
+import { useNotification } from "@/hooks/useNotification";
 
 const Dashboard = () => {
-  const { notifications, addNotification, removeNotification } = useNotification();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { editingTransactionId, duplicatingTransaction, importTransactionsFromCSV } = useTransactionStore();
   const uploaderRef = useRef<HTMLInputElement>(null);
+  const { addNotification } = useNotification();
 
   useEffect(() => {
     if (editingTransactionId || duplicatingTransaction) {
@@ -23,9 +21,9 @@ const Dashboard = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      importTransactionsFromCSV(file);
+      importTransactionsFromCSV(file, addNotification);
     } else {
-      alert("No file selected.");
+      addNotification("No file selected.", "error");
     }
   };
 
@@ -63,20 +61,6 @@ const Dashboard = () => {
       <TransactionList />
       <UndoTransaction />
 
-      <div>
-        <button onClick={() => addNotification("Transaction added successfully!", "success")} className="p-2 bg-green-500 text-white rounded">
-          Show Success
-        </button>
-        <button onClick={() => addNotification("Something went wrong!", "error")} className="p-2 bg-red-500 text-white rounded ml-2">
-          Show Error
-        </button>
-        <button onClick={() => addNotification("This is a warning.", "warning")} className="p-2 bg-yellow-500 text-white rounded ml-2">
-          Show Warning
-        </button>
-
-        {/* Notification Container */}
-        <NotificationContainer notifications={notifications} removeNotification={removeNotification} />
-      </div>
     </div>
   );
 };

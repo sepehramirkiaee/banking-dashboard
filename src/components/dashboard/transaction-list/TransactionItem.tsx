@@ -3,11 +3,13 @@ import { useTransactionStore } from "@/store/useTransactionStore";
 import { Transaction } from "@/types";
 import { DocumentDuplicateIcon, EllipsisVerticalIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ActionButton from "./transaction-item/ActionButton";
+import { useNotification } from "@/hooks/useNotification";
 
 export default function TransactionItem({ transaction }: { transaction: Transaction }) {
   const { removeTransaction, setEditingTransactionId, editingTransactionId, setDuplicatingTransaction } = useTransactionStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { addNotification } = useNotification();
 
   const handleRemove = (id: string) => {
     const confirmed = window.confirm("Are you sure you want to remove this transaction?");
@@ -15,7 +17,7 @@ export default function TransactionItem({ transaction }: { transaction: Transact
       if (editingTransactionId === id) {
         setEditingTransactionId(null);
       }
-      removeTransaction(id);
+      removeTransaction(id, addNotification);
     }
   };
 
