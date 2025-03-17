@@ -3,6 +3,7 @@ import NavItem from './NavItem'
 import { useState } from 'react'
 import Overlay from '@/components/common/ui/Overlay'
 import Nav from './Nav'
+import { signOut } from '@/utils/auth'
 
 export default function CompactSidebar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -33,7 +34,7 @@ export default function CompactSidebar() {
               <ul className='flex flex-col gap-2 text-white'>
                 <NavItem title='Profile' />
                 <NavItem title='Settings' />
-                <NavItem title='Sign out' />
+                <NavItem title='Sign out' onClick={signOut} className="cursor-pointer" />
               </ul>
             </div>
           </div>

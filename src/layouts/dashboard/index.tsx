@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import CompactSidebar from './CompactSidebar'
 import Nav from './Nav'
 import NotificationContainer from '@/components/common/ui/NotificationContainer'
+import UserMenu from './UserMenu'
 
 export default function DashboardLayout() {
   return (
@@ -14,8 +15,8 @@ export default function DashboardLayout() {
         <div className='hidden lg:block lg:grow'>
           <Nav />
         </div>
-        <div className='text-white mr-2 hidden lg:flex gap-3 items-center ml-4'>
-          <img className='w-8 h-8 bg-indigo-100 rounded-full' src='https://media.licdn.com/dms/image/v2/C4E03AQFj-bhXZhxHWQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1623740896318?e=1747267200&v=beta&t=TvkVytlFSDhnfMnK2asUK0Zq39YQZFd9Ch1WCr4meO4' alt='profile' />
+        <div className='text-white mr-2 hidden lg:flex gap-3 items-center ml-4 relative'>
+          <UserMenu />
         </div>
         <div className='block lg:hidden'>
           <CompactSidebar />
@@ -30,8 +31,6 @@ export default function DashboardLayout() {
       <div className='fixed bottom-0 right-0 left-0 z-50 lg:left-auto min-w-96'>
         <NotificationContainer />
       </div>
-
-
     </div>
   )
 }
