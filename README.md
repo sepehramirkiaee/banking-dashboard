@@ -68,6 +68,7 @@ This will execute all test files in the **`tests` directory**.
 - **Frontend:** React, Vite  
 - **State Management:** Zustand  
 - **Styling:** Tailwind CSS  
+- **Font:** Inter  
 - **Testing:** Vitest, React Testing Library  
 - **CSV Handling:** PapaParse  
 - **Icons & UI Components:** Heroicons  
