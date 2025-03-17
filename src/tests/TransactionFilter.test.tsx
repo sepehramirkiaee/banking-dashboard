@@ -3,17 +3,12 @@ import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/re
 import TransactionList from "@/components/dashboard/TransactionList";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import "@testing-library/jest-dom";
-import { openFilterForm } from "./helpers";
+import { fillDateFromFilter, fillDateToFilter, fillDescriptionFilter, fillTypeFilter, generateTransactions, openFilterForm } from "./helpers";
 
 describe("TransactionList", () => {
   beforeEach(() => {
     cleanup();
-    // useTransactionStore.setState({
-    //   getFilteredTransactions: () => [{ id: "000-000-000-000-001", description: "Test Transaction", amount: 100, date: new Date().toISOString(), type: "deposit", createdAt: Date.now() }],
-    //   isFilterActive: () => false,
-    // });
     render(<TransactionList />);
-    // openFilterForm();
   });
 
   it("should NOT render the Filter button when there are no transactions and no active filter", () => {
@@ -23,10 +18,7 @@ describe("TransactionList", () => {
 
   it("should render the Filter button when transactions exist", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     waitFor(() => {
@@ -44,10 +36,7 @@ describe("TransactionList", () => {
 
   it("should open the TransactionFilter form when clicking the Filter button", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
@@ -57,15 +46,12 @@ describe("TransactionList", () => {
 
   it("should list be filtered by chosen type", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
 
-    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "deposit" } });
+    fillTypeFilter("deposit");
 
     waitFor(() => {
       expect(screen.getByText("Salary")).toBeInTheDocument();
@@ -75,16 +61,13 @@ describe("TransactionList", () => {
 
   it("should list be filtered by chosen date range", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
 
-    fireEvent.change(screen.getByLabelText("Date From"), { target: { value: "2025-03-15" } });
-    fireEvent.change(screen.getByLabelText("Date To"), { target: { value: "2025-03-15" } });
+    fillDateFromFilter("2025-03-15");
+    fillDateToFilter("2025-03-15");
 
     waitFor(() => {
       expect(screen.getByText("Salary")).toBeInTheDocument();
@@ -94,15 +77,12 @@ describe("TransactionList", () => {
 
   it("should list be filtered by chosen description", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
 
-    fireEvent.change(screen.getByLabelText("Description"), { target: { value: "Salary" } });
+    fillDescriptionFilter("Salary");
 
     waitFor(() => {
       expect(screen.getByText("Salary")).toBeInTheDocument();
@@ -112,18 +92,15 @@ describe("TransactionList", () => {
 
   it("should list be filtered by chosen type, date range, and description", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
 
-    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "deposit" } });
-    fireEvent.change(screen.getByLabelText("Date From"), { target: { value: "2025-03-15" } });
-    fireEvent.change(screen.getByLabelText("Date To"), { target: { value: "2025-03-15" } });
-    fireEvent.change(screen.getByLabelText("Description"), { target: { value: "Salary" } });
+    fillTypeFilter("deposit");
+    fillDateFromFilter("2025-03-15");
+    fillDateToFilter("2025-03-15");
+    fillDescriptionFilter("Salary");
 
     waitFor(() => {
       expect(screen.getByText("Salary")).toBeInTheDocument();
@@ -133,18 +110,15 @@ describe("TransactionList", () => {
 
   it("should clear the filter when clicking the Clear button", () => {
     useTransactionStore.setState({
-      transactions: [
-        { id: "000-000-000-000-001", description: "Salary", amount: 1000, date: "2025-03-15", type: "deposit", createdAt: Date.now() },
-        { id: "000-000-000-000-002", description: "Groceries", amount: 50, date: "2025-03-16", type: "withdrawal", createdAt: Date.now() },
-      ],
+      transactions: generateTransactions(),
     });
 
     openFilterForm();
 
-    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "deposit" } });
-    fireEvent.change(screen.getByLabelText("Date From"), { target: { value: "2025-03-15" } });
-    fireEvent.change(screen.getByLabelText("Date To"), { target: { value: "2025-03-15" } });
-    fireEvent.change(screen.getByLabelText("Description"), { target: { value: "Salary" } });
+    fillTypeFilter("deposit");
+    fillDateFromFilter("2025-03-15");
+    fillDateToFilter("2025-03-15");
+    fillDescriptionFilter("Salary");
 
     fireEvent.click(screen.getByText("Reset Filters"));
 
