@@ -72,7 +72,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     // Ensure Withdrawal Does Not Exceed Available Balance
     if (type === "withdrawal") {
       const totalBalance = getTotalBalance();
-      if (numericAmount >= totalBalance) {
+      if (numericAmount > totalBalance) {
         addNotification('Insufficient balance! You cannot withdraw more than your available balance.', 'error');
         return;
       }
