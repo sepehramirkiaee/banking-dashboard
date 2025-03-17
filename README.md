@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# Banking Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 **A simple banking dashboard for managing transactions efficiently.**  
+This project was developed as a **technical assessment** to allow users to manage their financial transactions, including **adding, editing, filtering, importing, and exporting transactions.**
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚙️ **Installation & Setup**
 
-## Expanding the ESLint configuration
+### **🔹 Prerequisites**
+- **Node.js v20.x** (minimum)
+- **npm** (package manager)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### **🔹 Local Setup**
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/sepehramirkiaee/banking-dashboard.git
+   cd banking-dashboard
+   ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open in your browser:**
+   ```
+   http://localhost:5173
+   ```
+
+---
+
+## 🚀 **Deployment**
+
+This project is **pre-configured for Vercel**.
+
+### **🔹 Deploying on Vercel**
+- Simply **import the repository into Vercel** and trigger the **deployment action**.
+- No additional configuration is required, as **Vercel settings are already included**.
+
+🔗 **Live Demo:** [banking-dashboard-phi.vercel.app](https://banking-dashboard-phi.vercel.app)
+
+---
+
+## 🧪 **Testing**
+
+This project uses **Vitest** and **React Testing Library** for unit and integration testing.
+
+### **🔹 Running Tests**
+Run all tests with:
+```bash
+npm test
 ```
+This will execute all test files in the **`tests` directory**.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### **🔹 Testing Frameworks Used**
+- **Vitest** – Fast unit testing framework.
+- **React Testing Library** – Ensures UI correctness through user interactions.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 🛠 **Technologies Used**
+- **Frontend:** React, Vite  
+- **State Management:** Zustand  
+- **Styling:** Tailwind CSS  
+- **Testing:** Vitest, React Testing Library  
+- **CSV Handling:** PapaParse  
+- **Icons & UI Components:** Heroicons  
+- **Deployment:** Vercel  
+
+---
+
+## 📜 **License**
+
+This project is **open-source** and available under the **MIT License**.  
+You are free to **use, modify, and distribute** it without restrictions.
+
+---
+
+🚀 **Enjoy using the Banking Dashboard!**
