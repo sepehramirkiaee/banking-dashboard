@@ -161,7 +161,7 @@ describe("useTransactionStore", () => {
     // Test filtering by date range: Only transactions between 2024-04-02 and 2024-04-04 should be returned
     setFilters({ type: "all", startDate: "2024-04-02", endDate: "2024-04-04" });
     expect(getFilteredTransactions().length).toBe(1);
-    expect(getFilteredTransactions()[0].description).toBe("Groceries");
+    expect(getFilteredTransactions()[0]!.description).toBe("Groceries");
 
     // Test filtering by description: Should match partial text case-insensitively
     setFilters({
@@ -171,7 +171,7 @@ describe("useTransactionStore", () => {
       description: "free",
     });
     expect(getFilteredTransactions().length).toBe(1);
-    expect(getFilteredTransactions()[0].description).toBe("Freelance Payment");
+    expect(getFilteredTransactions()[0]!.description).toBe("Freelance Payment");
   });
 
   it("should correctly paginate transactions", async () => {
@@ -200,12 +200,12 @@ describe("useTransactionStore", () => {
     const transactionsPage1 = getFilteredTransactions();
   
     expect(transactionsPage1.length).toBe(5);
-    expect(transactionsPage1[0].description).toBe("Transaction 10");
+    expect(transactionsPage1[0]!.description).toBe("Transaction 10");
 
     setCurrentPage(2);
     const transactionsPage2 = getFilteredTransactions();
 
     expect(transactionsPage2.length).toBe(5);
-    expect(transactionsPage2[0].description).toBe("Transaction 5");
+    expect(transactionsPage2[0]!.description).toBe("Transaction 5");
   });
 });
