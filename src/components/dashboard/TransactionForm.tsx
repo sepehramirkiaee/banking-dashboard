@@ -51,7 +51,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     const numericAmount = Number(new BigNumber(amount).toFixed(2));
 
     // Prevent negative values and zero
-    if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
+    if (!amount || isNaN(numericAmount)) {
       addNotification('please enter a valid positive amount', 'error');
       return;
     }
@@ -68,8 +68,23 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
 
     // Trim description to remove unnecessary spaces
     const trimmedDescription = description.trim();
-    if (!trimmedDescription || trimmedDescription.length < 3 || trimmedDescription.length > 50) {
-      addNotification('Description must be between 3 and 50 characters.', 'error');
+    if (!trimmedDescription) {
+      addNotification('Description cannot be empty.', 'error');
+      return;
+    }
+
+    if(trimmedDescription.length < 3){
+      addNotification('Description must be more than 3 characters.', 'error');
+      return;
+    }
+
+    if(trimmedDescription.length > 50){
+      addNotification('Description must be less than 50 characters.', 'error');
+      return;
+    }
+
+    if(!date || isNaN(new Date(date).getTime())){
+      addNotification('Please select a valid date.', 'error');
       return;
     }
 
@@ -172,9 +187,10 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="block text-gray-800 text-sm font-medium">Transaction Date</label>
+                  <label htmlFor="date" className="block text-gray-800 text-sm font-medium">Transaction Date</label>
                   <input
                     type="date"
+                    id="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     className="w-full p-2 border rounded border-gray-300 text-sm"
@@ -182,9 +198,10 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="block text-gray-800 text-sm font-medium">Type</label>
+                  <label htmlFor="type" className="block text-gray-800 text-sm font-medium">Type</label>
                   <select
                     value={type}
+                    id="type"
                     onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
                     className="w-full p-2 border rounded border-gray-300 text-sm"
                   >

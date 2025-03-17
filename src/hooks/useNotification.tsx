@@ -11,7 +11,7 @@ export const useNotification = create<NotificationState>((set) => ({
   notifications: [],
   addNotification: (message, type) =>
     set((state) => {
-      if (state.notifications.length >= 5) return state; // Limit to 5 notifications
+      if (state.notifications.length >= 50) return state; // Limit to 5 notifications
       return { notifications: [...state.notifications, { id: crypto.randomUUID(), message, type }] };
     }),
   removeNotification: (id) =>
