@@ -1,7 +1,6 @@
 import { useTransactionStore } from '@/store/useTransactionStore'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { useNotification } from '@/hooks/useNotification'
 
 export default function UndoTransaction() {
@@ -42,25 +41,26 @@ export default function UndoTransaction() {
 
   if (!lastAddedTransaction) return null
 
-  return createPortal(
-    <div className='relative m-4 bg-indigo-700 text-white p-4 rounded-lg shadow-lg text-sm'>
-      <div className='bg-indigo-600 transition-all absolute inset-0 rounded-lg z-10'
-        style={{ width: `${progress}%` }}
-      ></div>
-      <div className='z-20 relative flex items-center gap-4'>
-        <button onClick={clearUndoNotification} className="cursor-pointer">
-          <XMarkIcon className="size-5" />
-        </button>
-        <p className='grow'>You can undo the last transaction</p>
-        <button
-          onClick={handleClickUndo}
-          className="text-indigo-200 hover:underline cursor-pointer"
-        >
-          Undo
-        </button>
-      </div>
+  return (
+    <div className='fixed top-[1rem] right-0 left-0 z-50 lg:left-auto min-w-96'>
+      <div className='relative m-4 border border-indigo-500 bg-indigo-700 text-white p-4 rounded-lg shadow-lg text-sm'>
+        <div className='bg-indigo-600 transition-all absolute inset-0 rounded-lg z-10'
+          style={{ width: `${progress}%` }}
+        ></div>
+        <div className='z-20 relative flex items-center gap-4'>
+          <button onClick={clearUndoNotification} className="cursor-pointer">
+            <XMarkIcon className="size-5" />
+          </button>
+          <p className='grow'>You can undo the last transaction</p>
+          <button
+            onClick={handleClickUndo}
+            className="text-indigo-200 hover:underline cursor-pointer"
+          >
+            Undo
+          </button>
+        </div>
 
-    </div>,
-    document.getElementById('notificatin-root')!
+      </div>
+    </div>
   )
 }

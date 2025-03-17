@@ -29,6 +29,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col gap-12">
+
       <div className="flex flex-col gap-2 items-center md:flex-row md:gap-4">
         <button
           onClick={() => setIsFormOpen(true)}
@@ -60,7 +61,6 @@ const Dashboard = () => {
       {isFormOpen && <TransactionForm setIsFormOpen={setIsFormOpen} />}
       <TransactionList />
       <UndoTransaction />
-
     </div>
   );
 };

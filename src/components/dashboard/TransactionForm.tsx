@@ -4,6 +4,7 @@ import Overlay from "../common/ui/Overlay";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Card from "../common/ui/Card";
 import { useNotification } from "@/hooks/useNotification";
+import BigNumber from "bignumber.js";
 
 interface TransactionFormProps {
   setIsFormOpen: (value: boolean) => void;
@@ -47,7 +48,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const numericAmount = Number(amount);
+    const numericAmount = Number(new BigNumber(amount).toFixed(2));
 
     // Prevent negative values and zero
     if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
@@ -71,7 +72,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
     // Ensure Withdrawal Does Not Exceed Available Balance
     if (type === "withdrawal") {
       const totalBalance = getTotalBalance();
-      if (numericAmount > totalBalance) {
+      if (numericAmount >= totalBalance) {
         addNotification('Insufficient balance! You cannot withdraw more than your available balance.', 'error');
         return;
       }
@@ -132,9 +133,10 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="block text-gray-800 text-sm font-medium">Amount</label>
+                  <label htmlFor="amount" className="block text-gray-800 text-sm font-medium">Amount</label>
                   <input
                     type="number"
+                    id="amount"
                     value={amount}
                     onChange={(e) => {
                       // Prevent negative input from being typed
@@ -147,9 +149,10 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="block text-gray-800 text-sm font-medium">Description</label>
+                  <label htmlFor="description" className="block text-gray-800 text-sm font-medium">Description</label>
                   <input
                     type="text"
+                    id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full p-2 border rounded border-gray-300 text-sm"
@@ -178,6 +181,7 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                     <option value="withdrawal">Withdrawal</option>
                   </select>
                 </div>
+
                 <div className="flex flex-col gap-2">
                   <button
                     type="submit"

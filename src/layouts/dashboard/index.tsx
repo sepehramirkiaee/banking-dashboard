@@ -25,9 +25,13 @@ export default function DashboardLayout() {
       <div className='p-4 flex-1 overflow-y-auto'>
         <Outlet />
       </div>
-      
-        {/* Notification Container */}
+
+      {/* Notification Container */}
+      <div className='fixed bottom-0 right-0 left-0 z-50 lg:left-auto min-w-96'>
         <NotificationContainer />
+      </div>
+
+
     </div>
   )
 }
