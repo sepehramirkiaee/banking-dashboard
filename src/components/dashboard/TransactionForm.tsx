@@ -185,14 +185,14 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                   >
                     {editingTransactionId ? "Update Transaction" : "Add Transaction"}
                   </button>
-                  {editingTransactionId && (
-                    <button
-                      type="button"
-                      onClick={handleResetForm}
-                      className="w-full text-sm bg-gray-100 p-2 rounded border border-gray-200 hover:bg-gray-200 cursor-pointer">
-                      Cancel
-                    </button>
-                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleResetForm}
+                    className="w-full text-sm bg-gray-100 p-2 rounded border border-gray-200 hover:bg-gray-200 cursor-pointer">
+                    Cancel
+                  </button>
+
                 </div>
               </div>
             </form>
