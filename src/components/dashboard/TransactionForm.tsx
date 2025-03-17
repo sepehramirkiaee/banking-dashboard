@@ -61,6 +61,11 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
       return;
     }
 
+    if(numericAmount < 0.01){
+      addNotification('Amount must be greater than 0.01', 'error');
+      return;
+    }
+
     // Trim description to remove unnecessary spaces
     const trimmedDescription = description.trim();
     if (!trimmedDescription || trimmedDescription.length < 3 || trimmedDescription.length > 50) {
@@ -143,7 +148,6 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                     type="number"
                     id="amount"
                     step="0.01"
-                    min="0.01"
                     value={amount}
                     onChange={(e) => {
                       // Prevent negative input from being typed
