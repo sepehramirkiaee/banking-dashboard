@@ -56,6 +56,11 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
       return;
     }
 
+    if(numericAmount > 1000000000){
+      addNotification('Amount must be less than 1,000,000,000', 'error');
+      return;
+    }
+
     // Trim description to remove unnecessary spaces
     const trimmedDescription = description.trim();
     if (!trimmedDescription || trimmedDescription.length < 3 || trimmedDescription.length > 50) {
