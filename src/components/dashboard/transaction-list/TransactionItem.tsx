@@ -5,6 +5,7 @@ import { DocumentDuplicateIcon, EllipsisVerticalIcon, PencilSquareIcon, TrashIco
 import ActionButton from "./transaction-item/ActionButton";
 import { useNotification } from "@/hooks/useNotification";
 import ConfirmationDialog from "@/components/common/ui/ConfirmationDialog";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export default function TransactionItem({ transaction }: { transaction: Transaction }) {
   const { removeTransaction, setEditingTransactionId, editingTransactionId, setDuplicatingTransaction } = useTransactionStore();
@@ -44,7 +45,7 @@ export default function TransactionItem({ transaction }: { transaction: Transact
         <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
       </div>
       <p className={` font-bold tabular-nums ${transaction.type === "deposit" ? "text-green-500" : "text-red-500"}`}>
-        {transaction.type === "deposit" ? "+" : "-"}€{Math.abs(transaction.amount).toFixed(2)}
+        {transaction.type === "deposit" ? "+" : "-"}€{formatCurrency(Math.abs(transaction.amount))}
       </p>
 
       {/* Ellipsis Button */}
