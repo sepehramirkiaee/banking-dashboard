@@ -53,6 +53,7 @@ export default function UndoTransaction() {
           </button>
           <p className='grow'>You can undo the last transaction</p>
           <button
+            id="undo"
             onClick={handleClickUndo}
             className="text-indigo-200 hover:underline cursor-pointer"
           >
