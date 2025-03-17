@@ -22,7 +22,7 @@ const AccountOverview = () => {
     <div>
       <h2 className="font-semibold  mb-3">Account Overview</h2>
       <Card>
-        <div className="flex flex-col divide-y divide-gray-200 md:flex-row md:divide-y-0 md:divide-x md:gap-4">
+        <div className="flex flex-col divide-y divide-gray-200 md:flex-row md:divide-y-0 md:divide-x">
           <AccountStatCard testId="balance" title="Balance" value={Number(totalBalance.toFixed(2))} />
           <AccountStatCard testId="income" title="Income" value={Number(totalIncome.toFixed(2))} />
           <AccountStatCard testId="expense" title="Expenses" value={Number(Math.abs(totalExpenses).toFixed(2))} />
