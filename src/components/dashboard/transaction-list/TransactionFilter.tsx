@@ -24,10 +24,11 @@ const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boole
 
               {/* Filter by Type */}
               <div className="flex flex-col gap-1">
-                <label className="block text-gray-800 text-sm font-medium">Type</label>
+                <label htmlFor="type" className="block text-gray-800 text-sm font-medium">Type</label>
 
                 <select
                   value={localFilters.type}
+                  id="type"
                   onChange={(e) => setLocalFilters({ ...localFilters, type: e.target.value as 'all' | TransactionType })}
                   className="w-full p-2 border rounded border-gray-300 text-sm"
                 >
@@ -39,9 +40,10 @@ const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boole
 
               {/* Filter by Start Date */}
               <div className="flex flex-col gap-1">
-                <label className="block text-gray-800 text-sm font-medium">Date From</label>
+                <label htmlFor="start-date" className="block text-gray-800 text-sm font-medium">Date From</label>
                 <input
                   type="date"
+                  id="start-date"
                   value={localFilters.startDate}
                   onChange={(e) => setLocalFilters({ ...localFilters, startDate: e.target.value })}
                   className="w-full p-2 border rounded border-gray-300 text-sm"
@@ -50,9 +52,10 @@ const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boole
 
               {/* Filter by End Date */}
               <div className="flex flex-col gap-1">
-                <label className="block text-gray-800 text-sm font-medium">Date To</label>
+                <label htmlFor="end-date" className="block text-gray-800 text-sm font-medium">Date To</label>
                 <input
                   type="date"
+                  id="end-date"
                   value={localFilters.endDate}
                   onChange={(e) => setLocalFilters({ ...localFilters, endDate: e.target.value })}
                   className="w-full p-2 border rounded border-gray-300 text-sm"
@@ -61,9 +64,10 @@ const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boole
 
               {/* Filter by Description */}
               <div className="flex flex-col gap-1">
-                <label className="block text-gray-800 text-sm font-medium">Description</label>
+                <label htmlFor="description" className="block text-gray-800 text-sm font-medium">Description</label>
                 <input
                   type="text"
+                  id="description"
                   placeholder="Search description..."
                   value={localFilters.description}
                   onChange={(e) => setLocalFilters({ ...localFilters, description: e.target.value })}

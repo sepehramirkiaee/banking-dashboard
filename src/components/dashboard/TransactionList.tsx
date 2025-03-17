@@ -17,6 +17,7 @@ const TransactionList = () => {
   const handleExportClick = () => {
     exportTransactionsAsCSV(addNotification);
   };
+  console.log(transactions.length)
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
@@ -29,6 +30,7 @@ const TransactionList = () => {
         {(transactions.length > 0 || isFilterActive()) && (
           <button
             onClick={() => setIsFilterOpen(true)}
+            data-testid="filter-button"
             // className="bg-indigo-50 cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100"
             className={classNames("bg-indigo-50 relative cursor-pointer flex gap-1 items-center border border-indigo-600 text-indigo-600 px-4 py-0.5 text-sm font-medium rounded-full hover:bg-indigo-100", {
               "bg-indigo-600 text-white hover:bg-indigo-700": isFilterActive(),

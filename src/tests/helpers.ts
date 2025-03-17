@@ -25,4 +25,7 @@ export const submitTransactionForm = () => {
   fireEvent.click(screen.getByRole("button", { name: /Add Transaction/i }));
 };
 
-
+//
+export const openFilterForm = () => {
+  fireEvent.click(screen.getByTestId("filter-button"));
+};
