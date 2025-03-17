@@ -43,7 +43,7 @@ This project is **pre-configured for Vercel**.
 - Simply **import the repository into Vercel** and trigger the **deployment action**.
 - No additional configuration is required, as **Vercel settings are already included**.
 
-🔗 **Live Demo:** [banking-dashboard-phi.vercel.app](https://banking-dashboard-phi.vercel.app)
+**Live Demo:** [banking-dashboard-phi.vercel.app](https://banking-dashboard-phi.vercel.app)
 
 ---
 
