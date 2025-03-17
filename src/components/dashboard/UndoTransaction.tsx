@@ -61,6 +61,6 @@ export default function UndoTransaction() {
       </div>
 
     </div>,
-    document.getElementById('notification-root')!
+    document.getElementById('notificatin-root')!
   )
 }
