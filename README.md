@@ -1,17 +1,17 @@
 # Banking Dashboard
 
-🚀 **A simple banking dashboard for managing transactions efficiently.**  
+**A simple banking dashboard for managing transactions efficiently.**  
 This project was developed as a **technical assessment** to allow users to manage their financial transactions, including **adding, editing, filtering, importing, and exporting transactions.**
 
 ---
 
-## ⚙️ **Installation & Setup**
+## **Installation & Setup**
 
-### **🔹 Prerequisites**
+### **Prerequisites**
 - **Node.js v20.x** (minimum)
 - **npm** (package manager)
 
-### **🔹 Local Setup**
+### **Local Setup**
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/sepehramirkiaee/banking-dashboard.git
@@ -35,11 +35,11 @@ This project was developed as a **technical assessment** to allow users to manag
 
 ---
 
-## 🚀 **Deployment**
+## **Deployment**
 
 This project is **pre-configured for Vercel**.
 
-### **🔹 Deploying on Vercel**
+### **Deploying on Vercel**
 - Simply **import the repository into Vercel** and trigger the **deployment action**.
 - No additional configuration is required, as **Vercel settings are already included**.
 
@@ -47,24 +47,24 @@ This project is **pre-configured for Vercel**.
 
 ---
 
-## 🧪 **Testing**
+## **Testing**
 
 This project uses **Vitest** and **React Testing Library** for unit and integration testing.
 
-### **🔹 Running Tests**
+### **Running Tests**
 Run all tests with:
 ```bash
 npm test
 ```
 This will execute all test files in the **`tests` directory**.
 
-### **🔹 Testing Frameworks Used**
+### **Testing Frameworks Used**
 - **Vitest** – Fast unit testing framework.
 - **React Testing Library** – Ensures UI correctness through user interactions.
 
 ---
 
-## 🛠 **Technologies Used**
+## **Technologies Used**
 - **Frontend:** React, Vite  
 - **State Management:** Zustand  
 - **Styling:** Tailwind CSS  
@@ -75,11 +75,11 @@ This will execute all test files in the **`tests` directory**.
 
 ---
 
-## 📜 **License**
+## **License**
 
 This project is **open-source** and available under the **MIT License**.  
 You are free to **use, modify, and distribute** it without restrictions.
 
 ---
 
-🚀 **Enjoy using the Banking Dashboard!**
+**Enjoy using the Banking Dashboard!**
