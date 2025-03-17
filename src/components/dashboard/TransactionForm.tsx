@@ -137,11 +137,13 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
                   <input
                     type="number"
                     id="amount"
+                    step="0.01"
+                    min="0.01"
                     value={amount}
                     onChange={(e) => {
                       // Prevent negative input from being typed
                       const value = e.target.value;
-                      if (value === "" || Number(value) > 0) setAmount(value);
+                      setAmount(value)
                     }}
                     className="w-full p-2 border rounded border-gray-300 text-sm"
                     placeholder="Enter amount"
