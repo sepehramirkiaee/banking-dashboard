@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useTransactionStore } from "@/store/useTransactionStore";
 import { TransactionStore, TransactionType } from "@/types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import Label from "@/components/common/form/Label";
+import Button from "@/components/common/form/Button";
+import Select from "@/components/common/form/Select";
+import Input from "@/components/common/form/Input";
 
 const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boolean) => void }) => {
   const { filters, setFilters } = useTransactionStore();
@@ -24,80 +28,60 @@ const TransactionFilter = ({ setIsFilterOpen }: { setIsFilterOpen: (value: boole
 
               {/* Filter by Type */}
               <div className="flex flex-col gap-1">
-                <label htmlFor="type" className="block text-gray-800 text-sm font-medium">Type</label>
-
-                <select
+                <Label htmlFor="type">Type</Label>
+                <Select
                   value={localFilters.type}
                   id="type"
                   onChange={(e) => setLocalFilters({ ...localFilters, type: e.target.value as 'all' | TransactionType })}
-                  className="w-full p-2 border rounded border-gray-300 text-sm"
                 >
                   <option value="all">All Transactions</option>
                   <option value="deposit">Deposits</option>
                   <option value="withdrawal">Withdrawals</option>
-                </select>
+                </Select>
               </div>
 
               {/* Filter by Start Date */}
               <div className="flex flex-col gap-1">
-                <label htmlFor="start-date" className="block text-gray-800 text-sm font-medium">Date From</label>
-                <input
-                  type="date"
-                  id="start-date"
-                  value={localFilters.startDate}
-                  onChange={(e) => setLocalFilters({ ...localFilters, startDate: e.target.value })}
-                  className="w-full p-2 border rounded border-gray-300 text-sm"
-                />
+                {/* <Label htmlFor="start-date">Date From</Label> */}
+                <Label htmlFor="start-date">Date From</Label>
+                <Input type="date" id="start-date" value={localFilters.startDate} onChange={(e) => setLocalFilters({ ...localFilters, startDate: e.target.value })} />
+
               </div>
 
               {/* Filter by End Date */}
               <div className="flex flex-col gap-1">
-                <label htmlFor="end-date" className="block text-gray-800 text-sm font-medium">Date To</label>
-                <input
-                  type="date"
-                  id="end-date"
-                  value={localFilters.endDate}
-                  onChange={(e) => setLocalFilters({ ...localFilters, endDate: e.target.value })}
-                  className="w-full p-2 border rounded border-gray-300 text-sm"
-                />
+                <Label htmlFor="end-date">Date To</Label>
+                <Input type="date" id="end-date" value={localFilters.endDate} onChange={(e) => setLocalFilters({ ...localFilters, endDate: e.target.value })} />
               </div>
 
               {/* Filter by Description */}
               <div className="flex flex-col gap-1">
-                <label htmlFor="description" className="block text-gray-800 text-sm font-medium">Description</label>
-                <input
-                  type="text"
-                  id="description"
-                  placeholder="Search description..."
-                  value={localFilters.description}
-                  onChange={(e) => setLocalFilters({ ...localFilters, description: e.target.value })}
-                  className="w-full p-2 border rounded border-gray-300 text-sm"
-                />
+                <Label htmlFor="description">Description</Label>
+                <Input type="text" id="description" value={localFilters.description} onChange={(e) => setLocalFilters({ ...localFilters, description: e.target.value })} placeholder="Search description..." />
               </div>
 
               <div className="flex flex-col gap-2">
                 {/* Submit Button */}
-                <button
+                <Button type="submit"
                   onClick={() => {
                     setFilters(localFilters);
                     setIsFilterOpen(false);
                   }}
-                  className="w-full text-sm font-medium bg-indigo-700 text-white p-2 rounded hover:bg-ingido-700 cursor-pointer hover:bg-indigo-800"
-                >
+                  typeVariant="primary">
                   Apply Filters
-                </button>
+                </Button>
 
                 {/* Reset Filters Button */}
-                <button
+                <Button type="button"
                   onClick={() => {
                     setLocalFilters(defaultFilters);
                     setFilters(defaultFilters);
                     setIsFilterOpen(false);
                   }}
-                  className="w-full text-sm bg-gray-100 p-2 rounded border border-gray-200 hover:bg-gray-200 cursor-pointer"
-                >
+                  typeVariant="secondary">
                   Reset Filters
-                </button>
+                </Button>
+                
               </div>
             </div>
           </div>

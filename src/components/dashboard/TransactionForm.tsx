@@ -5,6 +5,10 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import Card from "../common/ui/Card";
 import { useNotification } from "@/hooks/useNotification";
 import BigNumber from "bignumber.js";
+import Input from "../common/form/Input";
+import Label from "../common/form/Label";
+import Select from "../common/form/Select";
+import Button from "../common/form/Button";
 
 interface TransactionFormProps {
   setIsFormOpen: (value: boolean) => void;
@@ -56,12 +60,12 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
       return;
     }
 
-    if(numericAmount > 1000000000){
+    if (numericAmount > 1000000000) {
       addNotification('Amount must be less than 1,000,000,000', 'error');
       return;
     }
 
-    if(numericAmount < 0.01){
+    if (numericAmount < 0.01) {
       addNotification('Amount must be greater than 0.01', 'error');
       return;
     }
@@ -73,17 +77,17 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
       return;
     }
 
-    if(trimmedDescription.length < 3){
+    if (trimmedDescription.length < 3) {
       addNotification('Description must be more than 3 characters.', 'error');
       return;
     }
 
-    if(trimmedDescription.length > 50){
+    if (trimmedDescription.length > 50) {
       addNotification('Description must be less than 50 characters.', 'error');
       return;
     }
 
-    if(!date || isNaN(new Date(date).getTime())){
+    if (!date || isNaN(new Date(date).getTime())) {
       addNotification('Please select a valid date.', 'error');
       return;
     }
@@ -158,72 +162,41 @@ const TransactionForm = ({ setIsFormOpen }: TransactionFormProps) => {
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="amount" className="block text-gray-800 text-sm font-medium">Amount</label>
-                  <input
-                    type="number"
-                    id="amount"
-                    step="0.01"
-                    value={amount}
-                    onChange={(e) => {
-                      // Prevent negative input from being typed
-                      const value = e.target.value;
-                      setAmount(value)
-                    }}
-                    className="w-full p-2 border rounded border-gray-300 text-sm"
-                    placeholder="Enter amount"
-                  />
+                  <Label htmlFor="amount">Amount</Label>
+                  <Input type="number" id="amount" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount" />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="description" className="block text-gray-800 text-sm font-medium">Description</label>
-                  <input
-                    type="text"
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full p-2 border rounded border-gray-300 text-sm"
-                    placeholder="Enter description"
-                  />
+                  <Label htmlFor="description">Description</Label>
+                  <Input type="text" id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Enter description" />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="date" className="block text-gray-800 text-sm font-medium">Transaction Date</label>
-                  <input
-                    type="date"
-                    id="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full p-2 border rounded border-gray-300 text-sm"
-                  />
+                  <Label htmlFor="date">Transaction Date</Label>
+                  <Input type="date" id="date" value={date} onChange={(e) => setDate(e.target.value)} />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="type" className="block text-gray-800 text-sm font-medium">Type</label>
-                  <select
+                  <Label htmlFor="type">Type</Label>
+                  <Select
                     value={type}
                     id="type"
                     onChange={(e) => setType(e.target.value as "deposit" | "withdrawal")}
-                    className="w-full p-2 border rounded border-gray-300 text-sm"
                   >
                     <option value="deposit">Deposit</option>
                     <option value="withdrawal">Withdrawal</option>
-                  </select>
+                  </Select>
+                  
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <button
-                    type="submit"
-                    className="w-full text-sm font-medium bg-indigo-700 text-white p-2 rounded hover:bg-ingido-700 cursor-pointer hover:bg-indigo-800"
-                  >
+                  <Button type="submit" typeVariant="primary">
                     {editingTransactionId ? "Update Transaction" : "Add Transaction"}
-                  </button>
+                  </Button>
 
-                  <button
-                    type="button"
-                    onClick={handleResetForm}
-                    className="w-full text-sm bg-gray-100 p-2 rounded border border-gray-200 hover:bg-gray-200 cursor-pointer">
+                  <Button type="button" typeVariant="secondary" onClick={handleResetForm}>
                     Cancel
-                  </button>
+                  </Button>
 
                 </div>
               </div>
