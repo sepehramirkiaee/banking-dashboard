@@ -37,10 +37,10 @@ This project was developed as a **technical assessment** to allow users to manag
 
 ## **Running the Project with Docker**
 
-### **2️⃣ Production Mode (Built & Served via Nginx)**
+### **Production Mode (Built & Served via Nginx)**
 Run the **built project** using **Nginx**:
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 - Builds the project and serves it via **Nginx**.
 - Available at:
@@ -51,7 +51,7 @@ http://localhost:8080
 ### **Stopping the Server**
 To stop any running container, use:
 ```bash
-docker-compose down
+docker compose down
 ```
 ---
 
