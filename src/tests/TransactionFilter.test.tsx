@@ -5,7 +5,7 @@ import { useTransactionStore } from "@/store/useTransactionStore";
 import "@testing-library/jest-dom";
 import { fillDateFromFilter, fillDateToFilter, fillDescriptionFilter, fillTypeFilter, generateTransactions, openFilterForm } from "./helpers";
 
-describe("TransactionList", () => {
+describe("TransactionFilter", () => {
   beforeEach(() => {
     cleanup();
     render(<TransactionList />);

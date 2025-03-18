@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { Transaction } from "@/types";
 import NotificationContainer from "@/components/common/ui/NotificationContainer";
 
-describe("TransactionItem", () => {
+describe("TransactionRemove", () => {
   let transaction: Transaction;
 
   beforeEach(() => {

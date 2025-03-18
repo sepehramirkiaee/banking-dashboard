@@ -15,10 +15,10 @@ export default function TransactionItem({ transaction }: { transaction: Transact
   const { addNotification } = useNotification();
 
   const handleRemove = () => {
-      if (editingTransactionId === transaction.id) {
-        setEditingTransactionId(null);
-      }
-      removeTransaction(transaction.id, addNotification);
+    if (editingTransactionId === transaction.id) {
+      setEditingTransactionId(null);
+    }
+    removeTransaction(transaction.id, addNotification);
   };
 
   // Close the menu when clicking outside
@@ -65,10 +65,12 @@ export default function TransactionItem({ transaction }: { transaction: Transact
             className="absolute right-0 mt-2 w-36 bg-white shadow-xl rounded-lg border border-gray-200 z-50 overflow-hidden"
           >
 
-            <ActionButton onClick={() => {
-              setEditingTransactionId(transaction.id);
-              setIsMenuOpen(false);
-            }}>
+            <ActionButton
+              testId="editButton"
+              onClick={() => {
+                setEditingTransactionId(transaction.id);
+                setIsMenuOpen(false);
+              }}>
               <PencilSquareIcon className="size-4" />
               <span>Edit</span>
             </ActionButton>
@@ -81,12 +83,12 @@ export default function TransactionItem({ transaction }: { transaction: Transact
               <span>Duplicate</span>
             </ActionButton>
 
-            <ActionButton 
-            testId="removeButton"
-            onClick={() => {
-              setIsDialogOpen(true);
-              setIsMenuOpen(false);
-            }}>
+            <ActionButton
+              testId="removeButton"
+              onClick={() => {
+                setIsDialogOpen(true);
+                setIsMenuOpen(false);
+              }}>
               <TrashIcon className="size-4" />
               <span>Remove</span>
             </ActionButton>
