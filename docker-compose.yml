@@ -1,25 +1,10 @@
 version: '3.8'
 
 services:
-  # ✅ Development Mode (Node.js + Vite)
-  dev:
+  banking-dashboard:
     build:
       context: .
-      dockerfile: docker-files/Dockerfile.dev  # Separate Dockerfile for development
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - "5173:5173"
-    environment:
-      - CHOKIDAR_USEPOLLING=true  # Enables live reloading inside Docker
-    command: npm run dev
-
-  # ✅ Production Mode (Built Project on Nginx)
-  prod:
-    build:
-      context: .
-      dockerfile: docker-files/Dockerfile.prod  # Separate Dockerfile for production
+      dockerfile: docker-files/Dockerfile  # ✅ Correct path to the Dockerfile
     ports:
       - "8080:80"
     restart: unless-stopped

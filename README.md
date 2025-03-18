@@ -37,24 +37,10 @@ This project was developed as a **technical assessment** to allow users to manag
 
 ## **Running the Project with Docker**
 
-This project can be run in **two ways** using Docker:
-
-### **1️⃣ Development Mode (Hot-Reload)**
-Run the project in **development mode** (no need for Node.js on your machine):
-```bash
-docker compose up --build dev
-```
-- Runs the project using **Node.js and Vite**.
-- Enables **live reloading** on file changes.
-- Available at:
-```
-http://localhost:5173
-```
-
 ### **2️⃣ Production Mode (Built & Served via Nginx)**
 Run the **built project** using **Nginx**:
 ```bash
-docker compose up --build prod
+docker-compose up --build
 ```
 - Builds the project and serves it via **Nginx**.
 - Available at:
@@ -65,7 +51,7 @@ http://localhost:8080
 ### **Stopping the Server**
 To stop any running container, use:
 ```bash
-docker compose down
+docker-compose down
 ```
 ---
 
