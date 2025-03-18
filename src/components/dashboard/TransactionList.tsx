@@ -17,7 +17,6 @@ const TransactionList = () => {
   const handleExportClick = () => {
     exportTransactionsAsCSV(addNotification);
   };
-  console.log(transactions.length)
   return (
     <div>
       <div className="flex justify-between items-center mb-3">

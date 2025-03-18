@@ -52,6 +52,7 @@ export default function TransactionItem({ transaction }: { transaction: Transact
       <div className="-mr-2 relative">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          data-testid="itemActions"
           className="flex items-center hover:bg-gray-100 p-1 rounded cursor-pointer"
         >
           <EllipsisVerticalIcon className="h-5 w-5 text-gray-500" />
@@ -80,7 +81,9 @@ export default function TransactionItem({ transaction }: { transaction: Transact
               <span>Duplicate</span>
             </ActionButton>
 
-            <ActionButton onClick={() => {
+            <ActionButton 
+            testId="removeButton"
+            onClick={() => {
               setIsDialogOpen(true);
               setIsMenuOpen(false);
             }}>
