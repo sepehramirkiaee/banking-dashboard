@@ -75,10 +75,12 @@ export default function TransactionItem({ transaction }: { transaction: Transact
               <span>Edit</span>
             </ActionButton>
 
-            <ActionButton onClick={() => {
-              setDuplicatingTransaction(transaction);
-              setIsMenuOpen(false);
-            }}>
+            <ActionButton
+              testId="duplicateButton"
+              onClick={() => {
+                setDuplicatingTransaction(transaction);
+                setIsMenuOpen(false);
+              }}>
               <DocumentDuplicateIcon className="size-4" />
               <span>Duplicate</span>
             </ActionButton>

@@ -4,6 +4,7 @@ import TransactionItem from "@/components/dashboard/transaction-list/Transaction
 import "@testing-library/jest-dom";
 import { Transaction } from "@/types";
 import NotificationContainer from "@/components/common/ui/NotificationContainer";
+import { clickOnActionButton, openTransactionMenu } from "./helpers";
 
 describe("TransactionRemove", () => {
   let transaction: Transaction;
@@ -29,30 +30,20 @@ describe("TransactionRemove", () => {
   });
 
   it("should open the action menu when clicking the ellipsis button", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
+    openTransactionMenu()
     expect(screen.getByTestId("removeButton")).toBeInTheDocument();
   });
 
   it("should open confirmation dialog when clicking remove", () => {
-
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const removeButton = screen.getByTestId("removeButton");
-    fireEvent.click(removeButton);
+    openTransactionMenu()
+    clickOnActionButton("removeButton");
 
     expect(screen.getByText("Are you sure you want to remove this transaction?")).toBeInTheDocument();
   });
 
   it("should call removeTransaction and show notification when confirming deletion", () => {
-
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const removeButton = screen.getByTestId("removeButton");
-    fireEvent.click(removeButton);
+    openTransactionMenu()
+    clickOnActionButton("removeButton");
 
     const confirmButton = screen.getByText("Confirm");
     fireEvent.click(confirmButton);
@@ -64,11 +55,8 @@ describe("TransactionRemove", () => {
   });
 
   it("should not remove transaction when clicking cancel", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const removeButton = screen.getByTestId("removeButton");
-    fireEvent.click(removeButton);
+    openTransactionMenu()
+    clickOnActionButton("removeButton");
 
     const cancelButton = screen.getByText("Cancel");
     fireEvent.click(cancelButton);

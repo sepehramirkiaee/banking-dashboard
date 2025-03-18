@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-// import TransactionItem from "@/components/dashboard/transaction-list/TransactionItem";
 import "@testing-library/jest-dom";
 import { Transaction } from "@/types";
 import NotificationContainer from "@/components/common/ui/NotificationContainer";
-// import { TransactionForm } from "@/components/dashboard";
 import Dashboard from "@/pages/Dashboard";
 import { useTransactionStore } from "@/store/useTransactionStore";
+import { clickOnActionButton, openTransactionMenu } from "./helpers";
 
 describe("TransactionEdit", () => {
   let transaction: Transaction;
@@ -32,34 +31,24 @@ describe("TransactionEdit", () => {
     });
 
     render(<Dashboard />);
-    // render(<TransactionItem transaction={transaction} />);
-    // render(<TransactionForm />);
     render(<NotificationContainer />);
   });
 
   it("should open the action menu when clicking the ellipsis button", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
+    openTransactionMenu()
     expect(screen.getByTestId("editButton")).toBeInTheDocument();
   });
 
   it("should open the TransactionForm when clicking edit", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     expect(screen.getByText("Update Transaction")).toBeInTheDocument();
   });
 
   it("should pre-fill the form when editing a transaction", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     expect(screen.getByDisplayValue("100")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Test Transaction")).toBeInTheDocument();
@@ -67,11 +56,8 @@ describe("TransactionEdit", () => {
   });
 
   it("should update the transaction when submitting the form", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "200" } });
     fireEvent.change(screen.getByLabelText("Description"), { target: { value: "Updated Test Transaction" } });
@@ -86,11 +72,8 @@ describe("TransactionEdit", () => {
   });
 
   it("should not update the transaction when submitting with an invalid amount", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     fireEvent.change(screen.getByLabelText("Amount"), { target: { value: "0" } });
 
@@ -103,11 +86,8 @@ describe("TransactionEdit", () => {
   });
 
   it("should not update the transaction when submitting with an invalid description", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     fireEvent.change(screen.getByLabelText("Description"), { target: { value: "" } });
 
@@ -120,11 +100,8 @@ describe("TransactionEdit", () => {
   });
 
   it("should not update the transaction when submitting with an invalid date", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     fireEvent.change(screen.getByLabelText("Transaction Date"), { target: { value: "" } });
 
@@ -137,11 +114,8 @@ describe("TransactionEdit", () => {
   });
 
   it("should not update the transaction when submitting with an invalid type", () => {
-    const menuButton = screen.getByTestId("itemActions");
-    fireEvent.click(menuButton);
-
-    const editButton = screen.getByTestId("editButton");
-    fireEvent.click(editButton);
+    openTransactionMenu()
+    clickOnActionButton("editButton");
 
     fireEvent.change(screen.getByLabelText("Type"), { target: { value: "" } });
 

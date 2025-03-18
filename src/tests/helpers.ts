@@ -70,3 +70,12 @@ export const fillDateToFilter = (value: string) => {
 export const fillDescriptionFilter = (value: string) => {
   fireEvent.change(screen.getByLabelText("Description"), { target: { value } });
 }
+
+//
+export const openTransactionMenu = () => {
+  fireEvent.click(screen.getByTestId("itemActions"));
+};
+
+export const clickOnActionButton = (action: string) => {
+  fireEvent.click(screen.getByTestId(action));
+}
